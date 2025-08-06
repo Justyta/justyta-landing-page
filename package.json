@@ -1,0 +1,8 @@
+{
+  "name": "justyta-static",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'Static build ready'",
+    "start": "echo 'Static site'"
+  }
+}
