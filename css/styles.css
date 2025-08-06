@@ -1,0 +1,267 @@
+/* Custom Styles for JUSTYTA Legal Services */
+
+body {
+    font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #421111;
+}
+
+.font-decorative {
+    font-family: 'Cinzel Decorative', cursive;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+/* Custom gradient text utilities */
+.gradient-text-primary {
+    background: linear-gradient(to right, #04502E, #0A4D4D, #6BBF6B);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-secondary {
+    background: linear-gradient(to right, #421111, #2B0B0B);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Custom button styles */
+.btn-primary {
+    background-color: #C4AF7E;
+    color: white;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    background-color: #421111;
+    transform: scale(1.05);
+}
+
+.btn-secondary {
+    background-color: #04502E;
+    color: white;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+    background-color: #0A4D4D;
+    transform: scale(1.05);
+}
+
+.btn-tertiary {
+    background-color: #421111;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-tertiary:hover {
+    background-color: #2B0B0B;
+    transform: scale(1.05);
+}
+
+/* Video container styles */
+.video-container {
+    position: relative;
+    aspect-ratio: 16/9;
+    background-color: rgba(247, 245, 242, 0.5);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.video-container iframe {
+    width: 100%;
+    height: 100%;
+}
+
+/* Card styles */
+.card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(196, 175, 126, 0.3);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+    transform: translateY(0);
+}
+
+.card:hover {
+    box-shadow: 0 25px 50px -12px rgba(196, 175, 126, 0.3);
+    transform: translateY(-0.5rem);
+}
+
+/* Stat counter styles */
+.stat-counter {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #04502E;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: rgba(43, 11, 11, 0.7);
+}
+
+/* Language switcher styles */
+.language-switcher {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 50;
+}
+
+.language-switcher .switcher-container {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(196, 175, 126, 0.2);
+    padding: 0.5rem;
+}
+
+.language-switcher button {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.language-switcher button.active {
+    background-color: #C4AF7E;
+    color: white;
+}
+
+.language-switcher button:not(.active) {
+    color: #421111;
+}
+
+.language-switcher button:not(.active):hover {
+    background-color: #F7F5F2;
+}
+
+/* Navigation styles */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    background: rgba(247, 245, 242, 0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(196, 175, 126, 0.3);
+}
+
+/* Hero section styles */
+.hero-section {
+    background: #421111;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(157, 153, 144, 0.3);
+    padding-top: 5rem;
+}
+
+/* FAQ styles */
+.faq-item {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.faq-button {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.faq-button:hover {
+    background-color: rgba(247, 245, 242, 0.3);
+}
+
+.faq-content {
+    padding: 0 1.5rem 1rem 1.5rem;
+}
+
+/* Footer styles */
+.footer {
+    background-color: #2B0B0B;
+    color: white;
+    padding: 3rem 0;
+}
+
+.footer a:hover {
+    color: #C4AF7E;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .hero-section {
+        padding-top: 6rem;
+    }
+    
+    .language-switcher {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+    
+    .card {
+        padding: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}

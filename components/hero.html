@@ -1,0 +1,63 @@
+<!-- Hero Section Component -->
+<header id="hero" class="hero-section bg-brand-maroon">
+    <div class="container mx-auto px-4 py-20">
+        <!-- Logo Row -->
+        <div class="flex justify-center items-center mb-8">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="assets/images/JUSTYTA Logo transparent.png" alt="justyta" class="h-14 w-auto">
+                <span class="text-3xl md:text-4xl font-bold text-brand-maroon font-decorative">
+                    JUSTYTA
+                </span>
+            </a>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="text-center animate-fade-in-up">
+            <h1 class="text-5xl md:text-6xl font-bold gradient-text-primary font-decorative tracking-wide leading-tight mb-6"
+                x-html="__('hero.heading')">
+            </h1>
+
+            <div class="mt-6 space-y-4 max-w-3xl mx-auto text-xl md:text-2xl font-medium text-brand-charcoal/90">
+                <p x-html="__('hero.sub1')"></p>
+                <p x-html="__('hero.sub2')"></p>
+                <p x-html="__('hero.sub3')"></p>
+            </div>
+
+            <!-- CTA Button -->
+            <!--
+            <div class="mt-12">
+                <a href="#contact" class="btn-primary">
+                    <span x-text="__('hero.book_now')"></span>
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+            -->
+
+            <!-- YouTube Video Section -->
+            <div class="mt-16">
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="text-2xl md:text-3xl font-bold text-center mb-8 text-brand-maroon"
+                        x-text="__('hero.video_title')">
+                    </h3>
+                    <div class="video-container">
+                        <iframe 
+                            class="w-full h-full"
+                            src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                            title="JUSTYTA Legal Services Introduction"
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <!-- Second Book Now Button -->
+                    <div class="text-center mt-8">
+                        <a href="#contact" class="btn-secondary">
+                            <span x-text="__('hero.book_now')"></span>
+                            <i class="fas fa-calendar-check ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

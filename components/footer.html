@@ -1,0 +1,55 @@
+<!-- Footer Component -->
+<footer class="footer">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Company Info -->
+            <div class="md:col-span-2">
+                <div class="flex items-center space-x-3 mb-4">
+                    <img src="assets/images/JUSTYTA Logo transparent.png" alt="JUSTYTA" class="h-10 w-auto">
+                    <span class="text-2xl font-bold font-decorative">JUSTYTA</span>
+                </div>
+                <p class="text-brand-white/80 mb-4" x-text="__('footer.description')"></p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
+                        <i class="fab fa-facebook text-xl"></i>
+                    </a>
+                    <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Services -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4" x-text="__('footer.services_title')"></h4>
+                <ul class="space-y-2">
+                    <template x-for="service in __('footer.services')" :key="service">
+                        <li>
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors" x-text="service"></a>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+            
+            <!-- Contact -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4" x-text="__('footer.contact_title')"></h4>
+                <div class="space-y-2 text-brand-white/80">
+                    <p x-text="__('footer.contact.address')"></p>
+                    <p x-text="__('footer.contact.phone')"></p>
+                    <p x-text="__('footer.contact.email')"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="border-t border-brand-white/20 mt-8 pt-8 text-center">
+            <p class="text-brand-white/60" x-text="__('footer.copyright')"></p>
+        </div>
+    </div>
+</footer>
