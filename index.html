@@ -443,5 +443,61 @@
     <!-- Load Main App Script -->
     <script src="js/app.js"></script>
 
+    <!-- Express.js and CORS Configuration (for reference, not to be included in the final HTML) -->
+    <script>
+        const express = require('express');
+        const cors = require('cors');
+        const app = express();
+
+        // Install cors if you haven't already
+        // npm install cors
+
+        // CORS Configuration for your JUSTYTA booking system
+        const corsOptions = {
+            origin: [
+                'http://localhost:3000',
+                'http://127.0.0.1:3000',
+                'http://localhost:8000',
+                'http://localhost:5000',
+                'https://justyta.com',           // Your production domain
+                'https://www.justyta.com',       // www version
+                'https://justyta.netlify.app',   // If using Netlify
+                'https://justyta.vercel.app'     // If using Vercel
+            ],
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: [
+                'Content-Type', 
+                'Authorization', 
+                'Accept', 
+                'X-Requested-With',
+                'Cache-Control',
+                'Pragma'
+            ],
+            exposedHeaders: ['X-Total-Count', 'X-Request-ID']
+        };
+
+        // Apply CORS middleware BEFORE your routes
+        app.use(cors(corsOptions));
+
+        // Handle preflight requests explicitly
+        app.options('*', cors(corsOptions));
+
+        // Your existing routes
+        app.get('/api/v1/slots', (req, res) => {
+            // Your slots endpoint
+        });
+
+        app.post('/api/v1/book', (req, res) => {
+            // Your booking endpoint
+        });
+
+        // Start server
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+            console.log('CORS enabled for:', corsOptions.origin);
+        });
+    </script>
 </body>
 </html>
