@@ -2,7 +2,7 @@
 const translations = {
     en: {
         hero: {
-            heading: "Turn Views into Revenuer",
+            heading: "Turn Views into Revenue",
             sub1: "Instant access to <span class=\"text-brand-gold\">Top legal experts</span>.",
             sub2: "Seamless consultations — <span class=\"text-brand-white\">Secure</span>, <span class=\"text-brand-gold\">100% Efficient</span>, and <span class=\"text-brand-white\">Transparent</span>.",
             sub3: "<span class=\"text-brand-gold\">Legal advice</span>, anytime and anywhere, at your <span class=\"text-brand-gold\">fingertips</span>.",

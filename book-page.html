@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ currentLang: 'en' }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Booking System</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-white': '#FFFFFF',
+                        'brand-maroon': '#800020',
+                        'brand-gold': '#C4AF7E',
+                        'brand-cream': '#F5F5DC',
+                        'brand-charcoal': '#36454F',
+                        'brand-lime': '#90EE90',
+                        'brand-green': '#228B22'
+                    },
+                    fontFamily: {
+                        'decorative': ['Cinzel Decorative', 'serif'],
+                        'sans': ['Instrument Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .gradient-text-primary {
+            background: linear-gradient(135deg, #D4AF37, #90EE90, #F5F5DC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #D4AF37;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Calendar date animations */
+        .calendar-date-available {
+            background: linear-gradient(135deg, #228B22, #228B22);
+            transform: scale(1);
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-date-available:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(212, 175, 55, 0.3);
+            background: linear-gradient(135deg, #D4AF37, #D4AF37);
+        }
+        
+        .calendar-date-selected {
+            background: linear-gradient(135deg, #D4AF37, #D4AF37);
+            transform: scale(1.05);
+            animation: pulse-selected 2s infinite;
+        }
+        
+        @keyframes pulse-selected {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(212, 175, 55, 0); }
+        }
+        
+        .calendar-date-unavailable {
+            background: #f9fafb;
+            color: #9ca3af;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body class="bg-brand-white text-brand-maroon font-sans leading-normal tracking-normal relative" x-data="bookingApp()">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-40 bg-brand-gold backdrop-blur-lg border-b border-brand-gold/30">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <img src="assets/images/JUSTYTA Logo transparent.png" alt="JUSTYTA" class="h-8 w-auto">
+                    <span class="text-xl font-bold text-brand-maroon font-decorative">JUSTYTA</span>
+                </div>
+                
+                <!-- Contact Info or Help -->
+                
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Section -->
+    <section class="bg-brand-cream/30 py-24 pt-32">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                
+                <!-- Header -->
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6 gradient-text-primary font-decorative">
+                        Book Your Appointment
+                    </h1>
+                    <p class="text-xl text-brand-charcoal/80">
+                        Schedule your consultation at your convenience
+                    </p>
+                    
+                    <!-- Refresh Button -->
+                    <button 
+                        @click="loadAvailableSlots()" 
+                        class="mt-4 px-4 py-2 bg-brand-gold text-brand-maroon rounded-lg hover:bg-brand-lime transition-colors text-sm font-medium">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Refresh Calendar
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div x-show="isLoading" class="text-center py-12">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-brand-charcoal/70">Loading available appointments...</p>
+                </div>
+
+                <!-- Debug Panel -->
+                                <!-- Error State -->
+                <div x-show="error" class="bg-brand-cream border border-brand-maroon text-brand-maroon px-4 py-3 rounded mb-6">
+                    <strong>Error:</strong> <span x-text="error"></span>
+                </div>
+
+                <!-- Success Message -->
+                <div x-show="successMessage" class="bg-brand-green/20 border border-brand-green text-brand-green px-4 py-3 rounded mb-6">
+                    <strong>Success:</strong> <span x-text="successMessage"></span>
+                </div>
+
+                <!-- Booking Form -->
+                <div x-show="!isLoading" class="max-w-6xl mx-auto">
+                    
+                    <!-- Main Booking Interface -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-2">
+                            
+                            <!-- Left Side: Calendar -->
+                            <div class="p-8 border-r border-brand-cream">
+                                <h3 class="text-xl font-semibold mb-6 text-brand-maroon">
+                                    Select Date & Time
+                                </h3>
+                                
+                                <!-- Calendar -->
+                                <div>
+                                    <!-- Month Navigation -->
+                                    <div class="flex justify-between items-center mb-6">
+                                        <button @click="prevMonth()" class="p-2 hover:bg-brand-cream rounded">
+                                            <i class="fas fa-chevron-left text-brand-charcoal"></i>
+                                        </button>
+                                        <h4 class="text-lg font-medium text-brand-maroon" x-text="monthYear"></h4>
+                                        <button @click="nextMonth()" class="p-2 hover:bg-brand-cream rounded">
+                                            <i class="fas fa-chevron-right text-brand-charcoal"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Calendar Grid -->
+                                    <div class="grid grid-cols-7 gap-1 text-center text-sm">
+                                        <!-- Day Headers -->
+                                        <div class="p-3 font-medium text-brand-charcoal/70">Sun</div>
+                                        <div class="p-3 font-medium text-brand-charcoal/70">Mon</div>
+                                        <div class="p-3 font-medium text-brand-charcoal/70">Tue</div>
+                                        <div class="p-3 font-medium text-brand-charcoal/70">Wed</div>
+                                        <div class="p-3 font-medium text-brand-charcoal/70">Thu</div>
+                                        <div class="p-3 font-medium text-brand-charcoal/70">Fri</div>
+                                        <div class="p-3 font-medium text-brand-charcoal/70">Sat</div>
+                                        
+                                        <!-- Calendar Days -->
+                                        <template x-for="(day, index) in calendarDays" :key="index">
+                                            <button 
+                                                @click="selectDate(day)"
+                                                class="aspect-square p-2 rounded-lg text-sm font-medium transition-all duration-200 relative border"
+                                                :class="{
+                                                    'calendar-date-unavailable border-brand-cream': !day.isCurrentMonth || day.isPast || (!day.hasSlots && day.isCurrentMonth && !day.isPast),
+                                                    'calendar-date-available border-brand-green text-white': day.isCurrentMonth && !day.isPast && day.hasSlots && !day.isSelected,
+                                                    'calendar-date-selected border-brand-gold text-black font-bold': day.isSelected,
+                                                    'ring-2 ring-brand-maroon ring-opacity-60': day.isToday && !day.isSelected
+                                                }"
+                                                :disabled="!day.isCurrentMonth || day.isPast || !day.hasSlots">
+                                                <span x-text="day.day" class="relative z-10"></span>
+                                                
+                                                <!-- Available slots indicator -->
+                                                <div x-show="day.hasSlots && day.isCurrentMonth && !day.isPast && !day.isSelected" 
+                                                     class="absolute top-1 right-1 w-2 h-2 bg-white rounded-full shadow-sm"></div>
+                                                
+                                                <!-- Today indicator -->
+                                                <div x-show="day.isToday && !day.isSelected" 
+                                                     class="absolute -top-1 -right-1 w-3 h-3 bg-brand-maroon rounded-full border-2 border-white animate-pulse"></div>
+                                                
+                                                <!-- Slot count for available dates -->
+                                                <div x-show="day.hasSlots && day.isCurrentMonth && !day.isPast" 
+                                                     class="absolute bottom-0 left-0 right-0 text-xs font-bold opacity-90"
+                                                     :class="day.isSelected ? 'text-black' : 'text-white'">
+                                                    <span x-text="getSlotCount(day.date)"></span> slot<span x-show="getSlotCount(day.date) > 1">s</span>
+                                                </div>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Time Zone -->
+                                <div class="mt-8">
+                                    <label class="block text-sm font-medium text-brand-maroon mb-2">Time zone</label>
+                                    <select x-model="selectedTimezone" @change="updateTimezone()" class="w-full p-3 border border-brand-cream rounded-lg bg-white focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
+                                        <option value="GMT+04:00">GMT+04:00 Asia/Dubai (GMT+4)</option>
+                                        <option value="GMT+00:00">GMT+00:00 UTC (GMT+0)</option>
+                                        <option value="GMT+01:00">GMT+01:00 Europe/London (GMT+1)</option>
+                                        <option value="GMT+02:00">GMT+02:00 Europe/Berlin (GMT+2)</option>
+                                        <option value="GMT+03:00">GMT+03:00 Europe/Moscow (GMT+3)</option>
+                                        <option value="GMT+05:00">GMT+05:00 Asia/Karachi (GMT+5)</option>
+                                        <option value="GMT+05:30">GMT+05:30 Asia/Kolkata (GMT+5:30)</option>
+                                        <option value="GMT+08:00">GMT+08:00 Asia/Singapore (GMT+8)</option>
+                                        <option value="GMT-05:00">GMT-05:00 America/New_York (GMT-5)</option>
+                                        <option value="GMT-08:00">GMT-08:00 America/Los_Angeles (GMT-8)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Side: Time Slots OR Booking Form -->
+                            <div class="p-8 bg-brand-cream/30">
+                                <!-- Initial state: No date selected -->
+                                <div x-show="!selectedDate" class="text-center py-12">
+                                    <div class="text-brand-charcoal/40 mb-4">
+                                        <i class="fas fa-calendar-alt text-4xl"></i>
+                                    </div>
+                                    <p class="text-brand-charcoal/70">Please select a date to see available times</p>
+                                </div>
+
+                                <!-- Time Slots Selection (when date selected but no time slot chosen) -->
+                                <div x-show="selectedDate && !selectedSlot" class="space-y-3" x-data="{ currentPage: 0 }">
+                                    <h4 class="text-lg font-medium text-brand-maroon mb-4">
+                                        Available times for <span x-text="selectedDate ? formatSelectedDate(selectedDate) : ''"></span>
+                                    </h4>
+                                    
+                                    <!-- Time Slots -->
+                                    <div x-show="selectedDateSlots.length > 0" class="space-y-2">
+                                        <!-- Current page slots (6 slots per page) -->
+                                        <template x-for="(slot, index) in selectedDateSlots.slice(currentPage * 6, (currentPage + 1) * 6)" :key="slot.id">
+                                            <button 
+                                                @click="selectTimeSlot(slot)"
+                                                class="w-full p-4 text-left border-2 rounded-lg transition-all duration-200 font-medium border-brand-cream bg-white text-brand-maroon hover:border-brand-gold hover:bg-brand-gold/10">
+                                                <div class="flex justify-between items-center">
+                                                    <div>
+                                                        <span x-text="formatTime(slot.start_at)" class="text-lg font-semibold"></span>
+                                                        <span class="text-sm text-brand-charcoal/70 ml-2">(<span x-text="slot.duration"></span> min)</span>
+                                                    </div>
+                                                    <div class="text-xs text-brand-charcoal/60" x-text="selectedTimezone"></div>
+                                                </div>
+                                                <div class="text-xs text-brand-charcoal/60 mt-1">
+                                                    UTC: <span x-text="new Date(slot.start_at).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true})"></span>
+                                                </div>
+                                            </button>
+                                        </template>
+                                        
+                                        <!-- Pagination Controls -->
+                                        <div x-show="selectedDateSlots.length > 6" class="pt-3 border-t border-brand-cream/50 flex justify-between items-center">
+                                            <!-- Previous Button -->
+                                            <button 
+                                                @click="currentPage = Math.max(0, currentPage - 1)"
+                                                :disabled="currentPage === 0"
+                                                class="flex-1 py-3 px-4 text-center border-2 rounded-lg transition-all duration-200 font-medium mr-2"
+                                                :class="{
+                                                    'border-brand-gold/30 text-brand-maroon hover:border-brand-gold hover:bg-brand-gold/10': currentPage > 0,
+                                                    'border-brand-cream/50 text-brand-charcoal/40 cursor-not-allowed': currentPage === 0
+                                                }">
+                                                <i class="fas fa-chevron-left mr-2"></i>
+                                                Previous
+                                            </button>
+                                            
+                                            <!-- Next Button -->
+                                            <button 
+                                                @click="currentPage = Math.min(Math.floor((selectedDateSlots.length - 1) / 6), currentPage + 1)"
+                                                :disabled="(currentPage + 1) * 6 >= selectedDateSlots.length"
+                                                class="flex-1 py-3 px-4 text-center border-2 rounded-lg transition-all duration-200 font-medium ml-2"
+                                                :class="{
+                                                    'border-brand-gold/30 text-brand-maroon hover:border-brand-gold hover:bg-brand-gold/10': (currentPage + 1) * 6 < selectedDateSlots.length,
+                                                    'border-brand-cream/50 text-brand-charcoal/40 cursor-not-allowed': (currentPage + 1) * 6 >= selectedDateSlots.length
+                                                }">
+                                                Next
+                                                <i class="fas fa-chevron-right ml-2"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Page Indicator -->
+                                        <div x-show="selectedDateSlots.length > 6" class="text-center pt-2">
+                                            <span class="text-sm text-brand-charcoal/60">
+                                                Showing <span x-text="currentPage * 6 + 1"></span>-<span x-text="Math.min((currentPage + 1) * 6, selectedDateSlots.length)"></span> 
+                                                of <span x-text="selectedDateSlots.length"></span> available slots
+                                            </span>
+                                            
+                                            <!-- Page dots indicator -->
+                                            <div class="flex justify-center space-x-1 mt-2" x-show="Math.ceil(selectedDateSlots.length / 6) > 1">
+                                                <template x-for="page in Math.ceil(selectedDateSlots.length / 6)" :key="page">
+                                                    <button 
+                                                        @click="currentPage = page - 1"
+                                                        class="w-2 h-2 rounded-full transition-colors"
+                                                        :class="{
+                                                            'bg-brand-gold': currentPage === page - 1,
+                                                            'bg-brand-cream': currentPage !== page - 1
+                                                        }">
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- No slots message -->
+                                    <div x-show="selectedDateSlots.length === 0" class="text-center py-8">
+                                        <div class="text-brand-charcoal/40 mb-4">
+                                            <i class="fas fa-clock text-3xl"></i>
+                                        </div>
+                                        <p class="text-brand-charcoal/70">No available times on this date</p>
+                                        <button @click="refreshAvailableSlots()" 
+                                                class="mt-3 text-sm text-brand-green hover:text-brand-maroon">
+                                            Check for updates
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Booking Form (when time slot is selected) -->
+                                <div x-show="selectedSlot" x-transition class="space-y-6">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h4 class="text-lg font-medium text-brand-maroon">Complete Your Booking</h4>
+                                        <button @click="selectedSlot = null" class="text-brand-charcoal/60 hover:text-brand-maroon text-sm">
+                                            <i class="fas fa-arrow-left mr-1"></i> Back to times
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Selected Appointment Summary -->
+                                    <div class="bg-brand-gold/20 border border-brand-gold p-4 rounded-lg">
+                                        <h5 class="font-medium text-brand-maroon mb-2">Selected Appointment</h5>
+                                        <div class="text-sm text-brand-charcoal space-y-1">
+                                            <p><strong>Date:</strong> <span x-text="selectedSlot ? formatSelectedDate(new Date(selectedSlot.start_at)) : ''"></span></p>
+                                            <p><strong>Time:</strong> <span x-text="selectedSlot ? formatTime(selectedSlot.start_at) : ''"></span> <span x-text="selectedTimezone" class="text-brand-charcoal/70"></span></p>
+                                            <p><strong>Duration:</strong> <span x-text="selectedSlot ? selectedSlot.duration : ''"></span> minutes</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Contact Form -->
+                                    <form @submit.prevent="submitBooking()" class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Full Name *</label>
+                                            <input 
+                                                type="text" 
+                                                x-model="form.name"
+                                                required
+                                                class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Email Address *</label>
+                                            <input 
+                                                type="email" 
+                                                x-model="form.email"
+                                                required
+                                                class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Phone Number</label>
+                                            <div class="flex">
+                                                <!-- Country Code Selector -->
+                                                <select 
+                                                    x-model="form.countryCode"
+                                                    class="p-3 border border-brand-cream rounded-l-lg bg-white focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20 border-r-0 min-w-[100px]">
+                                                    <option value="+971">🇦🇪 +971</option>
+                                                    <option value="+1">🇺🇸 +1</option>
+                                                    <option value="+44">🇬🇧 +44</option>
+                                                    <option value="+91">🇮🇳 +91</option>
+                                                    <option value="+92">🇵🇰 +92</option>
+                                                    <option value="+966">🇸🇦 +966</option>
+                                                    <option value="+974">🇶🇦 +974</option>
+                                                    <option value="+968">🇴🇲 +968</option>
+                                                    <option value="+965">🇰🇼 +965</option>
+                                                    <option value="+973">🇧🇭 +973</option>
+                                                    <option value="+20">🇪🇬 +20</option>
+                                                    <option value="+962">🇯🇴 +962</option>
+                                                    <option value="+961">🇱🇧 +961</option>
+                                                    <option value="+49">🇩🇪 +49</option>
+                                                    <option value="+33">🇫🇷 +33</option>
+                                                    <option value="+39">🇮🇹 +39</option>
+                                                    <option value="+34">🇪🇸 +34</option>
+                                                    <option value="+86">🇨🇳 +86</option>
+                                                    <option value="+81">🇯🇵 +81</option>
+                                                    <option value="+65">🇸🇬 +65</option>
+                                                    <option value="+60">🇲🇾 +60</option>
+                                                    <option value="+66">🇹🇭 +66</option>
+                                                    <option value="+84">🇻🇳 +84</option>
+                                                    <option value="+63">🇵🇭 +63</option>
+                                                    <option value="+62">🇮🇩 +62</option>
+                                                    <option value="+61">🇦🇺 +61</option>
+                                                    <option value="+64">🇳🇿 +64</option>
+                                                    <option value="+27">🇿🇦 +27</option>
+                                                    <option value="+55">🇧🇷 +55</option>
+                                                    <option value="+52">🇲🇽 +52</option>
+                                                    <option value="+7">🇷🇺 +7</option>
+                                                    <option value="+90">🇹🇷 +90</option>
+                                                </select>
+                                                
+                                                <!-- Phone Number Input -->
+                                                <input 
+                                                    type="tel" 
+                                                    x-model="form.phone"
+                                                    @input="validatePhoneInput($event)"
+                                                    @keypress="onlyNumbers($event)"
+                                                    placeholder="Enter phone number"
+                                                    maxlength="15"
+                                                    class="flex-1 p-3 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20"
+                                                    :class="{
+                                                        'border-brand-cream focus:border-brand-gold': !form.phoneError,
+                                                        'border-red-500 focus:border-red-500': form.phoneError
+                                                    }">
+                                            </div>
+                                            
+                                            <!-- Phone Validation Error -->
+                                            <div x-show="form.phoneError" class="mt-1">
+                                                <p class="text-xs text-red-600" x-text="form.phoneError"></p>
+                                            </div>
+                                            
+                                            <!-- Format Helper (only show when no error) -->
+                                            <div x-show="!form.phoneError" class="mt-1">
+                                                <p class="text-xs text-brand-charcoal/60">
+                                                    Format: <span x-text="form.countryCode"></span> followed by your phone number (numbers only)
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Additional Notes</label>
+                                            <textarea 
+                                                x-model="form.notes"
+                                                rows="3"
+                                                class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20"
+                                                placeholder="Please describe your legal matter briefly..."></textarea>
+                                        </div>
+
+                                        <!-- Submit Button -->
+                                        <button 
+                                            type="submit"
+                                            :disabled="!selectedSlot || !form.name || !form.email || isSubmitting"
+                                            class="w-full bg-brand-gold text-brand-maroon font-semibold py-3 px-6 rounded-lg 
+                                                   hover:bg-brand-lime transition-all duration-300 transform hover:scale-[1.02] shadow-lg
+                                                   disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:bg-brand-gold">
+                                            <span x-show="!isSubmitting">
+                                                <i class="fas fa-calendar-check mr-2"></i>
+                                                Confirm Booking
+                                            </span>
+                                            <span x-show="isSubmitting">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                                Booking...
+                                            </span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Remove the old separate booking form section -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Modal -->
+    <div x-show="showSuccess" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100">
+            <div class="text-brand-green text-5xl mb-4">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-brand-maroon mb-4">Booking Confirmed!</h3>
+            <p class="text-brand-charcoal mb-2">
+                Your appointment has been scheduled successfully.
+            </p>
+            <p class="text-sm text-brand-charcoal/70 mb-6">
+                Booking ID: <span class="font-mono text-brand-maroon" x-text="bookingId"></span>
+            </p>
+            <p class="text-sm text-brand-charcoal mb-6">
+                You'll receive a confirmation email shortly with all the details.
+            </p>
+            <button 
+                @click="closeSuccessModal()"
+                class="bg-brand-gold text-brand-maroon px-6 py-3 rounded-lg hover:bg-brand-lime transition-colors">
+                <i class="fas fa-times mr-2"></i>
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        console.log('📝 Script starting...');
+        
+        // Test if Alpine.js will load
+        document.addEventListener('alpine:init', () => {
+            console.log('🏔️ Alpine.js initialized');
+        });
+       // api connection 
+        function bookingApp() {
+            console.log('📅 BookingApp function called');
+            return {
+                apiBase: 'https://booking-backend-zxu8.onrender.com/api/v1',
+                isLoading: true,
+                isSubmitting: false,
+                error: '',
+                successMessage: '',
+                showSuccess: false,
+                bookingId: '',
+                
+                availableSlots: [],
+                selectedDate: null,
+                selectedSlot: null,
+                refreshInterval: null,
+                lastRefreshTime: null,
+                
+                // Calendar properties
+                currentDate: new Date(),
+                selectedTimezone: 'GMT+04:00',
+                timezones: {
+                    'GMT+04:00': { offset: 4, name: 'Asia/Dubai' },
+                    'GMT+00:00': { offset: 0, name: 'UTC' },
+                    'GMT+01:00': { offset: 1, name: 'Europe/London' },
+                    'GMT+02:00': { offset: 2, name: 'Europe/Berlin' },
+                    'GMT+03:00': { offset: 3, name: 'Europe/Moscow' },
+                    'GMT+05:00': { offset: 5, name: 'Asia/Karachi' },
+                    'GMT+05:30': { offset: 5.5, name: 'Asia/Kolkata' },
+                    'GMT+08:00': { offset: 8, name: 'Asia/Singapore' },
+                    'GMT-05:00': { offset: -5, name: 'America/New_York' },
+                    'GMT-08:00': { offset: -8, name: 'America/Los_Angeles' }
+                },
+                
+                form: {
+                    name: '',
+                    email: '',
+                    countryCode: '+971', // Default to UAE
+                    phone: '',
+                    phoneError: '',
+                    notes: ''
+                },
+
+                get selectedDateSlots() {
+                    if (!this.selectedDate) {
+                        console.log('🔍 selectedDateSlots: No date selected');
+                        return [];
+                    }
+                    
+                    // Get the local date string (YYYY-MM-DD) from selected date
+                    const selectedLocalDateStr = this.selectedDate.getFullYear() + '-' + 
+                                                String(this.selectedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                String(this.selectedDate.getDate()).padStart(2, '0');
+                    
+                    console.log('🔍 selectedDateSlots: Looking for slots on', selectedLocalDateStr);
+                    console.log('🔍 Total available slots:', this.availableSlots.length);
+                    
+                    const slots = this.availableSlots.filter(slot => {
+                        // Parse UTC time and convert to local date for comparison
+                        const slotDate = new Date(slot.start_at);
+                        const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                               String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                               String(slotDate.getDate()).padStart(2, '0');
+                        
+                        const matches = slotLocalDateStr === selectedLocalDateStr;
+                        if (matches) {
+                            console.log('🔍 Found matching slot:', slot.start_at, '→', slotLocalDateStr);
+                        }
+                        return matches;
+                    });
+                    
+                    console.log('🔍 selectedDateSlots: Found', slots.length, 'slots for', selectedLocalDateStr);
+                    return slots;
+                },
+
+                get selectedDateFormatted() {
+                    if (!this.selectedDate) return '';
+                    return this.selectedDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                },
+
+                // Calendar computed properties
+                get monthYear() {
+                    return this.currentDate.toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        year: 'numeric' 
+                    });
+                },
+                
+                get calendarDays() {
+                    const year = this.currentDate.getFullYear();
+                    const month = this.currentDate.getMonth();
+                    
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
+                    const startDate = new Date(firstDay);
+                    startDate.setDate(startDate.getDate() - firstDay.getDay());
+                    
+                    const days = [];
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    for (let i = 0; i < 42; i++) {
+                        const date = new Date(startDate);
+                        date.setDate(startDate.getDate() + i);
+                        
+                        const hasSlots = this.hasSlots(date);
+                        const isToday = date.getTime() === today.getTime();
+                        
+                        days.push({
+                            day: date.getDate(),
+                            date: date,
+                            isCurrentMonth: date.getMonth() === month,
+                            isSelected: this.selectedDate && date.toDateString() === this.selectedDate.toDateString(),
+                            isPast: date < today,
+                            hasSlots: hasSlots,
+                            isToday: isToday
+                        });
+                    }
+                    
+                    return days;
+                },
+
+                async init() {
+                    console.log('🚀 BookingApp init() called');
+                    await this.loadAvailableSlots();
+                    this.startAutoRefresh();
+                },
+
+                startAutoRefresh() {
+                    // Refresh slots every 30 seconds to show real-time availability
+                    this.refreshInterval = setInterval(async () => {
+                        await this.refreshAvailableSlots();
+                    }, 30000);
+                },
+
+                async refreshAvailableSlots() {
+                    try {
+                        const currentDate = new Date();
+                        const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+                        
+                        const response = await fetch(`${this.apiBase}/slots?month=${currentMonth}&_t=${Date.now()}`);
+                        
+                        if (response.ok) {
+                            const newSlots = await response.json();
+                            
+                            // Check if selected slot is still available
+                            if (this.selectedSlot) {
+                                const stillAvailable = newSlots.find(slot => slot.id === this.selectedSlot.id);
+                                if (!stillAvailable) {
+                                    this.selectedSlot = null;
+                                    this.selectedDate = null;
+                                    this.error = 'Your selected appointment slot was just booked by someone else. Please select another time.';
+                                }
+                            }
+                            
+                            this.availableSlots = newSlots;
+                            this.lastRefreshTime = new Date();
+                        }
+                    } catch (error) {
+                        console.error('Error refreshing slots:', error);
+                    }
+                },
+
+                async loadAvailableSlots() {
+                    try {
+                        console.log('🔄 Loading slots...');
+                        this.isLoading = true;
+                        this.error = '';
+                        
+                        const currentDate = new Date();
+                        const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+                        console.log('📅 Current month:', currentMonth);
+                        
+                        // Add cache-busting timestamp and no-cache headers
+                        const url = `${this.apiBase}/slots?month=${currentMonth}&_t=${Date.now()}`;
+                        console.log('🔗 Fetching:', url);
+                        
+                        const response = await fetch(url, {
+                            cache: 'no-cache',
+                            headers: {
+                                'Cache-Control': 'no-cache',
+                                'Pragma': 'no-cache'
+                            }
+                        });
+                        console.log('📨 Response status:', response.status);
+                        
+                        if (response.ok) {
+                            this.availableSlots = await response.json();
+                            this.lastRefreshTime = new Date();
+                            console.log('✅ Loaded slots:', this.availableSlots.length);
+                            
+                            // Force re-render of calendar
+                            this.currentDate = new Date(this.currentDate);
+                        } else {
+                            console.error('❌ Response not OK:', response.status, response.statusText);
+                            throw new Error('Failed to load available appointments');
+                        }
+                    } catch (error) {
+                        console.error('💥 Error loading slots:', error);
+                        this.error = 'Failed to load available appointments. Please refresh the page.';
+                    } finally {
+                        this.isLoading = false;
+                        console.log('🏁 Loading finished. Slots count:', this.availableSlots.length);
+                    }
+                },
+
+                // Calendar methods
+                prevMonth() {
+                    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.currentDate = new Date(this.currentDate);
+                    
+                    // Load slots for new month
+                    const monthStr = `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, '0')}`;
+                    this.loadSlotsForMonth(monthStr);
+                },
+                
+                nextMonth() {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.currentDate = new Date(this.currentDate);
+                    
+                    // Load slots for new month
+                    const monthStr = `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, '0')}`;
+                    this.loadSlotsForMonth(monthStr);
+                }
+                ,
+                selectDate(day) {
+                    if (!day.isPast && day.isCurrentMonth && day.hasSlots) {
+                        this.selectedDate = day.date;
+                        this.selectedSlot = null; // Reset time selection when date changes
+                        this.error = '';
+                        this.successMessage = '';
+                        
+                        // Scroll to time selection section
+                        setTimeout(() => {
+                            const timeSection = document.querySelector('[x-show="selectedDate"]');
+                            if (timeSection) {
+                                timeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }, 100);
+                    }
+                },
+
+                async loadSlotsForMonth(monthStr) {
+                    try {
+                        const response = await fetch(`${this.apiBase}/slots?month=${monthStr}&_t=${Date.now()}`);
+                        if (response.ok) {
+                            const newSlots = await response.json();
+                            // Update slots for the new month
+                            this.availableSlots = newSlots;
+                            this.lastRefreshTime = new Date();
+                            
+                            // Clear selection if selected date is not in new month
+                            if (this.selectedDate) {
+                                const selectedMonth = `${this.selectedDate.getFullYear()}-${String(this.selectedDate.getMonth() + 1).padStart(2, '0')}`;
+                                if (selectedMonth !== monthStr) {
+                                    this.selectedDate = null;
+                                    this.selectedSlot = null;
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error loading slots for month:', error);
+                        this.error = 'Failed to load appointments for this month.';
+                    }
+                },
+
+                selectTimeSlot(slot) {
+                    this.selectedSlot = slot;
+                    this.error = '';
+                    this.successMessage = '';
+                    
+                    // Scroll to booking form section
+                    setTimeout(() => {
+                        const formSection = document.querySelector('[x-show="selectedSlot"]');
+                        if (formSection) {
+                            formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 100);
+                },
+
+                onlyNumbers(event) {
+                    // Allow only numbers, backspace, delete, tab, escape, enter
+                    const allowedKeys = [8, 9, 27, 13, 46]; // backspace, tab, escape, enter, delete
+                    const key = event.which || event.keyCode;
+                    
+                    // Allow special keys
+                    if (allowedKeys.includes(key)) {
+                        return true;
+                    }
+                    
+                    // Allow numbers (0-9)
+                    if (key >= 48 && key <= 57) {
+                        return true;
+                    }
+                    
+                    // Prevent all other keys
+                    event.preventDefault();
+                    return false;
+                },
+
+                validatePhoneInput(event) {
+                    const value = event.target.value;
+                    this.form.phoneError = '';
+                    
+                    // Remove any non-numeric characters
+                    const numbersOnly = value.replace(/\D/g, '');
+                    
+                    // Update the model with numbers only
+                    this.form.phone = numbersOnly;
+                    
+                    // Validation rules
+                    if (value.length > 0) {
+                        // Check if input contains non-numeric characters
+                        if (value !== numbersOnly) {
+                            this.form.phoneError = 'Phone number must contain only numbers';
+                            return;
+                        }
+                        
+                        // Check minimum length
+                        if (numbersOnly.length < 7) {
+                            this.form.phoneError = 'Phone number must be at least 7 digits';
+                            return;
+                        }
+                        
+                        // Check maximum length
+                        if (numbersOnly.length > 15) {
+                            this.form.phoneError = 'Phone number cannot exceed 15 digits';
+                            return;
+                        }
+                    }
+                    
+                    // Clear error if validation passes
+                    this.form.phoneError = '';
+                },
+
+                validateForm() {
+                    let isValid = true;
+                    
+                    // Reset errors
+                    this.form.phoneError = '';
+                    this.error = '';
+                    
+                    // Validate phone number if provided
+                    if (this.form.phone) {
+                        const numbersOnly = this.form.phone.replace(/\D/g, '');
+                        
+                        if (this.form.phone !== numbersOnly) {
+                            this.form.phoneError = 'Phone number must contain only numbers';
+                            isValid = false;
+                        } else if (numbersOnly.length < 7) {
+                            this.form.phoneError = 'Phone number must be at least 7 digits';
+                            isValid = false;
+                        } else if (numbersOnly.length > 15) {
+                            this.form.phoneError = 'Phone number cannot exceed 15 digits';
+                            isValid = false;
+                        }
+                    }
+                    
+                    return isValid;
+                },
+
+                async submitBooking() {
+                    if (!this.selectedSlot || !this.form.name || !this.form.email) {
+                        this.error = 'Please fill in all required fields and select a time slot.';
+                        return;
+                    }
+
+                    // Validate form including phone number
+                    if (!this.validateForm()) {
+                        this.error = 'Please fix the validation errors before submitting.';
+                        return;
+                    }
+
+                    try {
+                        this.isSubmitting = true;
+                        this.error = '';
+
+                        const response = await fetch(`${this.apiBase}/book`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                slotId: this.selectedSlot.id,
+                                email: this.form.email,
+                                name: this.form.name,
+                                phone: this.form.phone ? this.form.countryCode + this.form.phone : '',
+                                description: this.form.notes
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            this.bookingId = result.bookingId;
+                            this.showSuccess = true;
+                            
+                            // Immediately remove the booked slot from available slots
+                            this.availableSlots = this.availableSlots.filter(slot => slot.id !== this.selectedSlot.id);
+                            
+                            // Reset form
+                            this.selectedSlot = null;
+                            this.selectedDate = null;
+                            this.form = {
+                                name: '',
+                                email: '',
+                                countryCode: '+971', // Default to UAE
+                                phone: '',
+                                phoneError: '',
+                                notes: ''
+                            };
+
+                            // Refresh all slots to get the latest availability
+                            setTimeout(() => {
+                                this.refreshAvailableSlots();
+                            }, 1000);
+
+                        } else if (response.status === 409) {
+                            this.error = 'This appointment slot was just booked by someone else. Please select a different time.';
+                            // Immediately refresh available slots
+                            await this.refreshAvailableSlots();
+                            this.selectedSlot = null;
+                            this.selectedDate = null;
+
+                        } else {
+                            this.error = result.error || 'Booking failed. Please try again.';
+                        }
+
+                    } catch (error) {
+                        console.error('Booking error:', error);
+                        this.error = 'Network error. Please check your connection and try again.';
+                    } finally {
+                        this.isSubmitting = false;
+                    }
+                },
+
+                closeSuccessModal() {
+                    this.showSuccess = false;
+                    this.bookingId = '';
+                },
+
+                destroy() {
+                    if (this.refreshInterval) {
+                        clearInterval(this.refreshInterval);
+                    }
+                },
+
+                updateTimezone() {
+                    // Force a re-render of the time slots when timezone changes
+                    this.selectedDate = this.selectedDate;
+                },
+
+                convertToTimezone(dateTimeString) {
+                    const date = new Date(dateTimeString);
+                    // Use the browser's built-in timezone handling
+                    return date;
+                },
+
+                formatTime(dateTimeString) {
+                    const date = new Date(dateTimeString);
+                    const timezone = this.timezones[this.selectedTimezone];
+                    
+                    // Create a proper timezone offset string
+                    const offsetHours = Math.floor(Math.abs(timezone.offset));
+                    const offsetMinutes = (Math.abs(timezone.offset) % 1) * 60;
+                    const offsetSign = timezone.offset >= 0 ? '+' : '-';
+                    const offsetString = `${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
+                    
+                    // Convert UTC to selected timezone manually
+                    const utcTime = date.getTime();
+                    const localTime = new Date(utcTime + (timezone.offset * 60 * 60 * 1000));
+                    
+                    return localTime.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+                },
+
+                formatDate(dateTimeString) {
+                    const date = new Date(dateTimeString);
+                    return date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                },
+
+                formatDateOnly(date) {
+                    return date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                },
+
+                formatSelectedDate(date) {
+                    return date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                },
+
+                hasSlots(date) {
+                    // Get the local date string (YYYY-MM-DD) from the calendar date
+                    const calendarLocalDateStr = date.getFullYear() + '-' + 
+                                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                String(date.getDate()).padStart(2, '0');
+                    
+                    const hasSlots = this.availableSlots.some(slot => {
+                        // Parse UTC time and convert to local date for comparison
+                        const slotDate = new Date(slot.start_at);
+                        const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                               String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                               String(slotDate.getDate()).padStart(2, '0');
+                        
+                        return slotLocalDateStr === calendarLocalDateStr;
+                    });
+                    
+                    return hasSlots;
+                },
+
+                getSlotCount(date) {
+                    // Get the local date string (YYYY-MM-DD) from the calendar date
+                    const calendarLocalDateStr = date.getFullYear() + '-' + 
+                                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                String(date.getDate()).padStart(2, '0');
+                    
+                    return this.availableSlots.filter(slot => {
+                        // Parse UTC time and convert to local date for comparison
+                        const slotDate = new Date(slot.start_at);
+                        const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                               String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                               String(slotDate.getDate()).padStart(2, '0');
+                        
+                        return slotLocalDateStr === calendarLocalDateStr;
+                    }).length;
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
