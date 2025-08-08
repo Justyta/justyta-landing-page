@@ -240,8 +240,9 @@
                                 </div>
                             </div>
                             
-                            <!-- Right Side: Time Slots -->
+                            <!-- Right Side: Time Slots OR Booking Form -->
                             <div class="p-8 bg-brand-cream/30">
+                                <!-- Initial state: No date selected -->
                                 <div x-show="!selectedDate" class="text-center py-12">
                                     <div class="text-brand-charcoal/40 mb-4">
                                         <i class="fas fa-calendar-alt text-4xl"></i>
@@ -249,21 +250,19 @@
                                     <p class="text-brand-charcoal/70">Please select a date to see available times</p>
                                 </div>
 
-                                <div x-show="selectedDate" class="space-y-3">
+                                <!-- Time Slots Selection (when date selected but no time slot chosen) -->
+                                <div x-show="selectedDate && !selectedSlot" class="space-y-3" x-data="{ currentPage: 0 }">
                                     <h4 class="text-lg font-medium text-brand-maroon mb-4">
                                         Available times for <span x-text="selectedDate ? formatSelectedDate(selectedDate) : ''"></span>
                                     </h4>
                                     
                                     <!-- Time Slots -->
                                     <div x-show="selectedDateSlots.length > 0" class="space-y-2">
-                                        <template x-for="slot in selectedDateSlots" :key="slot.id">
+                                        <!-- Current page slots (6 slots per page) -->
+                                        <template x-for="(slot, index) in selectedDateSlots.slice(currentPage * 6, (currentPage + 1) * 6)" :key="slot.id">
                                             <button 
                                                 @click="selectTimeSlot(slot)"
-                                                class="w-full p-4 text-left border-2 rounded-lg transition-all duration-200 font-medium"
-                                                :class="{
-                                                    'border-brand-gold bg-brand-gold/20 text-brand-maroon': selectedSlot && selectedSlot.id === slot.id,
-                                                    'border-brand-cream bg-white text-brand-maroon hover:border-brand-gold hover:bg-brand-gold/10': !selectedSlot || selectedSlot.id !== slot.id
-                                                }">
+                                                class="w-full p-4 text-left border-2 rounded-lg transition-all duration-200 font-medium border-brand-cream bg-white text-brand-maroon hover:border-brand-gold hover:bg-brand-gold/10">
                                                 <div class="flex justify-between items-center">
                                                     <div>
                                                         <span x-text="formatTime(slot.start_at)" class="text-lg font-semibold"></span>
@@ -276,6 +275,57 @@
                                                 </div>
                                             </button>
                                         </template>
+                                        
+                                        <!-- Pagination Controls -->
+                                        <div x-show="selectedDateSlots.length > 6" class="pt-3 border-t border-brand-cream/50 flex justify-between items-center">
+                                            <!-- Previous Button -->
+                                            <button 
+                                                @click="currentPage = Math.max(0, currentPage - 1)"
+                                                :disabled="currentPage === 0"
+                                                class="flex-1 py-3 px-4 text-center border-2 rounded-lg transition-all duration-200 font-medium mr-2"
+                                                :class="{
+                                                    'border-brand-gold/30 text-brand-maroon hover:border-brand-gold hover:bg-brand-gold/10': currentPage > 0,
+                                                    'border-brand-cream/50 text-brand-charcoal/40 cursor-not-allowed': currentPage === 0
+                                                }">
+                                                <i class="fas fa-chevron-left mr-2"></i>
+                                                Previous
+                                            </button>
+                                            
+                                            <!-- Next Button -->
+                                            <button 
+                                                @click="currentPage = Math.min(Math.floor((selectedDateSlots.length - 1) / 6), currentPage + 1)"
+                                                :disabled="(currentPage + 1) * 6 >= selectedDateSlots.length"
+                                                class="flex-1 py-3 px-4 text-center border-2 rounded-lg transition-all duration-200 font-medium ml-2"
+                                                :class="{
+                                                    'border-brand-gold/30 text-brand-maroon hover:border-brand-gold hover:bg-brand-gold/10': (currentPage + 1) * 6 < selectedDateSlots.length,
+                                                    'border-brand-cream/50 text-brand-charcoal/40 cursor-not-allowed': (currentPage + 1) * 6 >= selectedDateSlots.length
+                                                }">
+                                                Next
+                                                <i class="fas fa-chevron-right ml-2"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Page Indicator -->
+                                        <div x-show="selectedDateSlots.length > 6" class="text-center pt-2">
+                                            <span class="text-sm text-brand-charcoal/60">
+                                                Showing <span x-text="currentPage * 6 + 1"></span>-<span x-text="Math.min((currentPage + 1) * 6, selectedDateSlots.length)"></span> 
+                                                of <span x-text="selectedDateSlots.length"></span> available slots
+                                            </span>
+                                            
+                                            <!-- Page dots indicator -->
+                                            <div class="flex justify-center space-x-1 mt-2" x-show="Math.ceil(selectedDateSlots.length / 6) > 1">
+                                                <template x-for="page in Math.ceil(selectedDateSlots.length / 6)" :key="page">
+                                                    <button 
+                                                        @click="currentPage = page - 1"
+                                                        class="w-2 h-2 rounded-full transition-colors"
+                                                        :class="{
+                                                            'bg-brand-gold': currentPage === page - 1,
+                                                            'bg-brand-cream': currentPage !== page - 1
+                                                        }">
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
                                     </div>
                                     
                                     <!-- No slots message -->
@@ -290,98 +340,147 @@
                                         </button>
                                     </div>
                                 </div>
+
+                                <!-- Booking Form (when time slot is selected) -->
+                                <div x-show="selectedSlot" x-transition class="space-y-6">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h4 class="text-lg font-medium text-brand-maroon">Complete Your Booking</h4>
+                                        <button @click="selectedSlot = null" class="text-brand-charcoal/60 hover:text-brand-maroon text-sm">
+                                            <i class="fas fa-arrow-left mr-1"></i> Back to times
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Selected Appointment Summary -->
+                                    <div class="bg-brand-gold/20 border border-brand-gold p-4 rounded-lg">
+                                        <h5 class="font-medium text-brand-maroon mb-2">Selected Appointment</h5>
+                                        <div class="text-sm text-brand-charcoal space-y-1">
+                                            <p><strong>Date:</strong> <span x-text="selectedSlot ? formatSelectedDate(new Date(selectedSlot.start_at)) : ''"></span></p>
+                                            <p><strong>Time:</strong> <span x-text="selectedSlot ? formatTime(selectedSlot.start_at) : ''"></span> <span x-text="selectedTimezone" class="text-brand-charcoal/70"></span></p>
+                                            <p><strong>Duration:</strong> <span x-text="selectedSlot ? selectedSlot.duration : ''"></span> minutes</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Contact Form -->
+                                    <form @submit.prevent="submitBooking()" class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Full Name *</label>
+                                            <input 
+                                                type="text" 
+                                                x-model="form.name"
+                                                required
+                                                class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Email Address *</label>
+                                            <input 
+                                                type="email" 
+                                                x-model="form.email"
+                                                required
+                                                class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Phone Number</label>
+                                            <div class="flex">
+                                                <!-- Country Code Selector -->
+                                                <select 
+                                                    x-model="form.countryCode"
+                                                    class="p-3 border border-brand-cream rounded-l-lg bg-white focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20 border-r-0 min-w-[100px]">
+                                                    <option value="+971">🇦🇪 +971</option>
+                                                    <option value="+1">🇺🇸 +1</option>
+                                                    <option value="+44">🇬🇧 +44</option>
+                                                    <option value="+91">🇮🇳 +91</option>
+                                                    <option value="+92">🇵🇰 +92</option>
+                                                    <option value="+966">🇸🇦 +966</option>
+                                                    <option value="+974">🇶🇦 +974</option>
+                                                    <option value="+968">🇴🇲 +968</option>
+                                                    <option value="+965">🇰🇼 +965</option>
+                                                    <option value="+973">🇧🇭 +973</option>
+                                                    <option value="+20">🇪🇬 +20</option>
+                                                    <option value="+962">🇯🇴 +962</option>
+                                                    <option value="+961">🇱🇧 +961</option>
+                                                    <option value="+49">🇩🇪 +49</option>
+                                                    <option value="+33">🇫🇷 +33</option>
+                                                    <option value="+39">🇮🇹 +39</option>
+                                                    <option value="+34">🇪🇸 +34</option>
+                                                    <option value="+86">🇨🇳 +86</option>
+                                                    <option value="+81">🇯🇵 +81</option>
+                                                    <option value="+65">🇸🇬 +65</option>
+                                                    <option value="+60">🇲🇾 +60</option>
+                                                    <option value="+66">🇹🇭 +66</option>
+                                                    <option value="+84">🇻🇳 +84</option>
+                                                    <option value="+63">🇵🇭 +63</option>
+                                                    <option value="+62">🇮🇩 +62</option>
+                                                    <option value="+61">🇦🇺 +61</option>
+                                                    <option value="+64">🇳🇿 +64</option>
+                                                    <option value="+27">🇿🇦 +27</option>
+                                                    <option value="+55">🇧🇷 +55</option>
+                                                    <option value="+52">🇲🇽 +52</option>
+                                                    <option value="+7">🇷🇺 +7</option>
+                                                    <option value="+90">🇹🇷 +90</option>
+                                                </select>
+                                                
+                                                <!-- Phone Number Input -->
+                                                <input 
+                                                    type="tel" 
+                                                    x-model="form.phone"
+                                                    @input="validatePhoneInput($event)"
+                                                    @keypress="onlyNumbers($event)"
+                                                    placeholder="Enter phone number"
+                                                    maxlength="15"
+                                                    class="flex-1 p-3 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20"
+                                                    :class="{
+                                                        'border-brand-cream focus:border-brand-gold': !form.phoneError,
+                                                        'border-red-500 focus:border-red-500': form.phoneError
+                                                    }">
+                                            </div>
+                                            
+                                            <!-- Phone Validation Error -->
+                                            <div x-show="form.phoneError" class="mt-1">
+                                                <p class="text-xs text-red-600" x-text="form.phoneError"></p>
+                                            </div>
+                                            
+                                            <!-- Format Helper (only show when no error) -->
+                                            <div x-show="!form.phoneError" class="mt-1">
+                                                <p class="text-xs text-brand-charcoal/60">
+                                                    Format: <span x-text="form.countryCode"></span> followed by your phone number (numbers only)
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Additional Notes</label>
+                                            <textarea 
+                                                x-model="form.notes"
+                                                rows="3"
+                                                class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20"
+                                                placeholder="Please describe your legal matter briefly..."></textarea>
+                                        </div>
+
+                                        <!-- Submit Button -->
+                                        <button 
+                                            type="submit"
+                                            :disabled="!selectedSlot || !form.name || !form.email || isSubmitting"
+                                            class="w-full bg-brand-gold text-brand-maroon font-semibold py-3 px-6 rounded-lg 
+                                                   hover:bg-brand-lime transition-all duration-300 transform hover:scale-[1.02] shadow-lg
+                                                   disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:bg-brand-gold">
+                                            <span x-show="!isSubmitting">
+                                                <i class="fas fa-calendar-check mr-2"></i>
+                                                Confirm Booking
+                                            </span>
+                                            <span x-show="isSubmitting">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                                Booking...
+                                            </span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Booking Form - Shows after time selection -->
-                    <div x-show="selectedSlot" x-transition class="mt-8 bg-white rounded-xl shadow-lg p-8">
-                        <h3 class="text-xl font-semibold mb-6 text-brand-maroon">
-                            Complete Your Booking
-                        </h3>
-                        
-                        <!-- Selected Appointment Summary -->
-                        <div class="bg-brand-gold/20 border border-brand-gold p-4 rounded-lg mb-6">
-                            <h4 class="font-medium text-brand-maroon mb-2">Selected Appointment</h4>
-                            <div class="text-sm text-brand-charcoal">
-                                <p><strong>Date:</strong> <span x-text="selectedSlot ? formatSelectedDate(new Date(selectedSlot.start_at)) : ''"></span></p>
-                                <p><strong>Time:</strong> <span x-text="selectedSlot ? formatTime(selectedSlot.start_at) : ''"></span> <span x-text="selectedTimezone" class="text-brand-charcoal/70"></span></p>
-                                <p><strong>Duration:</strong> <span x-text="selectedSlot ? selectedSlot.duration : ''"></span> minutes</p>
-                                <p><strong>Timezone:</strong> <span x-text="selectedTimezone + ' ' + timezones[selectedTimezone].name" class="text-brand-charcoal/70"></span></p>
-                            </div>
-                        </div>
-                        
-                        <!-- Contact Form -->
-                        <form @submit.prevent="submitBooking()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-brand-maroon mb-2">Full Name *</label>
-                                <input 
-                                    type="text" 
-                                    x-model="form.name"
-                                    required
-                                    class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-brand-maroon mb-2">Email Address *</label>
-                                <input 
-                                    type="email" 
-                                    x-model="form.email"
-                                    required
-                                    class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-brand-maroon mb-2">Phone Number</label>
-                                <input 
-                                    type="tel" 
-                                    x-model="form.phone"
-                                    class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-brand-maroon mb-2">Service Type</label>
-                                <select 
-                                    x-model="form.serviceType"
-                                    class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
-                                    <option value="">Select a service</option>
-                                    <option value="consultation">General Consultation</option>
-                                    <option value="corporate">Corporate Law</option>
-                                    <option value="litigation">Litigation</option>
-                                    <option value="contracts">Contract Review</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-brand-maroon mb-2">Additional Notes</label>
-                                <textarea 
-                                    x-model="form.notes"
-                                    rows="3"
-                                    class="w-full p-3 border border-brand-cream rounded-lg focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20"
-                                    placeholder="Please describe your legal matter briefly..."></textarea>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <div class="md:col-span-2">
-                                <button 
-                                    type="submit"
-                                    :disabled="!selectedSlot || !form.name || !form.email || isSubmitting"
-                                    class="w-full bg-brand-gold text-brand-maroon font-semibold py-4 px-6 rounded-lg 
-                                           hover:bg-brand-lime transition-all duration-300 transform hover:scale-[1.02] shadow-lg
-                                           disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:bg-brand-gold">
-                                    <span x-show="!isSubmitting">
-                                        <i class="fas fa-calendar-check mr-2"></i>
-                                        Confirm Booking
-                                    </span>
-                                    <span x-show="isSubmitting">
-                                        <i class="fas fa-spinner fa-spin mr-2"></i>
-                                        Booking...
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    <!-- Remove the old separate booking form section -->
                 </div>
             </div>
         </div>
@@ -466,8 +565,9 @@
                 form: {
                     name: '',
                     email: '',
+                    countryCode: '+971', // Default to UAE
                     phone: '',
-                    serviceType: '',
+                    phoneError: '',
                     notes: ''
                 },
 
@@ -656,8 +756,8 @@
                     // Load slots for new month
                     const monthStr = `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, '0')}`;
                     this.loadSlotsForMonth(monthStr);
-                },
-                
+                }
+                ,
                 selectDate(day) {
                     if (!day.isPast && day.isCurrentMonth && day.hasSlots) {
                         this.selectedDate = day.date;
@@ -713,24 +813,96 @@
                     }, 100);
                 },
 
-                selectSlot(slot) {
-                    this.selectedSlot = slot;
-                    this.selectedDate = new Date(slot.start_at);
-                    this.error = '';
-                    this.successMessage = '';
-                    console.log('🎯 Selected slot:', slot);
+                onlyNumbers(event) {
+                    // Allow only numbers, backspace, delete, tab, escape, enter
+                    const allowedKeys = [8, 9, 27, 13, 46]; // backspace, tab, escape, enter, delete
+                    const key = event.which || event.keyCode;
+                    
+                    // Allow special keys
+                    if (allowedKeys.includes(key)) {
+                        return true;
+                    }
+                    
+                    // Allow numbers (0-9)
+                    if (key >= 48 && key <= 57) {
+                        return true;
+                    }
+                    
+                    // Prevent all other keys
+                    event.preventDefault();
+                    return false;
                 },
 
-                selectSlot(slot) {
-                    this.selectedSlot = slot;
-                    this.selectedDate = new Date(slot.start_at);
+                validatePhoneInput(event) {
+                    const value = event.target.value;
+                    this.form.phoneError = '';
+                    
+                    // Remove any non-numeric characters
+                    const numbersOnly = value.replace(/\D/g, '');
+                    
+                    // Update the model with numbers only
+                    this.form.phone = numbersOnly;
+                    
+                    // Validation rules
+                    if (value.length > 0) {
+                        // Check if input contains non-numeric characters
+                        if (value !== numbersOnly) {
+                            this.form.phoneError = 'Phone number must contain only numbers';
+                            return;
+                        }
+                        
+                        // Check minimum length
+                        if (numbersOnly.length < 7) {
+                            this.form.phoneError = 'Phone number must be at least 7 digits';
+                            return;
+                        }
+                        
+                        // Check maximum length
+                        if (numbersOnly.length > 15) {
+                            this.form.phoneError = 'Phone number cannot exceed 15 digits';
+                            return;
+                        }
+                    }
+                    
+                    // Clear error if validation passes
+                    this.form.phoneError = '';
+                },
+
+                validateForm() {
+                    let isValid = true;
+                    
+                    // Reset errors
+                    this.form.phoneError = '';
                     this.error = '';
-                    this.successMessage = '';
+                    
+                    // Validate phone number if provided
+                    if (this.form.phone) {
+                        const numbersOnly = this.form.phone.replace(/\D/g, '');
+                        
+                        if (this.form.phone !== numbersOnly) {
+                            this.form.phoneError = 'Phone number must contain only numbers';
+                            isValid = false;
+                        } else if (numbersOnly.length < 7) {
+                            this.form.phoneError = 'Phone number must be at least 7 digits';
+                            isValid = false;
+                        } else if (numbersOnly.length > 15) {
+                            this.form.phoneError = 'Phone number cannot exceed 15 digits';
+                            isValid = false;
+                        }
+                    }
+                    
+                    return isValid;
                 },
 
                 async submitBooking() {
                     if (!this.selectedSlot || !this.form.name || !this.form.email) {
                         this.error = 'Please fill in all required fields and select a time slot.';
+                        return;
+                    }
+
+                    // Validate form including phone number
+                    if (!this.validateForm()) {
+                        this.error = 'Please fix the validation errors before submitting.';
                         return;
                     }
 
@@ -747,7 +919,7 @@
                                 slotId: this.selectedSlot.id,
                                 email: this.form.email,
                                 name: this.form.name,
-                                phone: this.form.phone,
+                                phone: this.form.phone ? this.form.countryCode + this.form.phone : '',
                                 description: this.form.notes
                             })
                         });
@@ -767,8 +939,9 @@
                             this.form = {
                                 name: '',
                                 email: '',
+                                countryCode: '+971', // Default to UAE
                                 phone: '',
-                                serviceType: '',
+                                phoneError: '',
                                 notes: ''
                             };
 
