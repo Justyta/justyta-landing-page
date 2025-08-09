@@ -571,6 +571,92 @@
                     notes: ''
                 },
 
+                // Fixed formatTime function - treat database time as GMT+4, not UTC
+                formatTime(dateTimeString) {
+                    try {
+                        // The database stores time as GMT+4 local time, not UTC
+                        // We need to parse it as GMT+4 and then convert to the selected timezone
+                        
+                        const timezone = this.timezones[this.selectedTimezone];
+                        
+                        // Parse the datetime string as GMT+4 (the actual storage timezone)
+                        const storedTime = new Date(dateTimeString);
+                        
+                        // Since the database stores GMT+4 local time, we need to treat it as such
+                        // The stored time is actually GMT+4, so we calculate the offset difference
+                        const offsetDifference = timezone.offset - 4; // 4 is the GMT+4 where data is stored
+                        
+                        // Apply the offset difference to get the time in selected timezone
+                        const targetTime = new Date(storedTime.getTime() + (offsetDifference * 60 * 60 * 1000));
+                        
+                        return targetTime.toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                        });
+                    } catch (error) {
+                        console.error('Error formatting time:', error);
+                        return 'Invalid Time';
+                    }
+                },
+
+                // Fixed date comparison logic for calendar
+                hasSlots(date) {
+                    // Get the local date string (YYYY-MM-DD) from the calendar date
+                    const calendarLocalDateStr = date.getFullYear() + '-' + 
+                                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                String(date.getDate()).padStart(2, '0');
+                    
+                    const hasSlots = this.availableSlots.some(slot => {
+                        if (!slot || !slot.start_at) return false;
+                        
+                        try {
+                            // Parse the slot time (stored as GMT+4 local time)
+                            const slotDate = new Date(slot.start_at);
+                            
+                            // Get just the date part in local timezone (GMT+4)
+                            const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                                   String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                   String(slotDate.getDate()).padStart(2, '0');
+                            
+                            return slotLocalDateStr === calendarLocalDateStr;
+                        } catch (error) {
+                            console.error('Error processing slot date:', error);
+                            return false;
+                        }
+                    });
+                    
+                    return hasSlots;
+                },
+
+                // Fixed slot count calculation
+                getSlotCount(date) {
+                    // Get the local date string (YYYY-MM-DD) from the calendar date
+                    const calendarLocalDateStr = date.getFullYear() + '-' + 
+                                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                String(date.getDate()).padStart(2, '0');
+                    
+                    return this.availableSlots.filter(slot => {
+                        if (!slot || !slot.start_at) return false;
+                        
+                        try {
+                            // Parse the slot time (stored as GMT+4 local time)
+                            const slotDate = new Date(slot.start_at);
+                            
+                            // Get just the date part in local timezone (GMT+4)
+                            const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                                   String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                   String(slotDate.getDate()).padStart(2, '0');
+                            
+                            return slotLocalDateStr === calendarLocalDateStr;
+                        } catch (error) {
+                            console.error('Error processing slot date for count:', error);
+                            return false;
+                        }
+                    }).length;
+                },
+
+                // Fixed selectedDateSlots computation
                 get selectedDateSlots() {
                     if (!this.selectedDate) {
                         console.log('🔍 selectedDateSlots: No date selected');
@@ -586,21 +672,36 @@
                     console.log('🔍 Total available slots:', this.availableSlots.length);
                     
                     const slots = this.availableSlots.filter(slot => {
-                        // Parse UTC time and convert to local date for comparison
-                        const slotDate = new Date(slot.start_at);
-                        const slotLocalDateStr = slotDate.getFullYear() + '-' + 
-                                               String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                               String(slotDate.getDate()).padStart(2, '0');
-                        
-                        const matches = slotLocalDateStr === selectedLocalDateStr;
-                        if (matches) {
-                            console.log('🔍 Found matching slot:', slot.start_at, '→', slotLocalDateStr);
+                        if (!slot || !slot.start_at) {
+                            console.warn('Invalid slot:', slot);
+                            return false;
                         }
-                        return matches;
+                        
+                        try {
+                            // Parse the slot time (stored as GMT+4 local time)
+                            const slotDate = new Date(slot.start_at);
+                            
+                            // Get just the date part in local timezone (GMT+4)
+                            const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                                   String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                   String(slotDate.getDate()).padStart(2, '0');
+                            
+                            const matches = slotLocalDateStr === selectedLocalDateStr;
+                            if (matches) {
+                                console.log('🔍 Found matching slot:', slot.start_at, '→', slotLocalDateStr);
+                            }
+                            return matches;
+                        } catch (error) {
+                            console.error('Error processing slot:', slot, error);
+                            return false;
+                        }
                     });
                     
-                    console.log('🔍 selectedDateSlots: Found', slots.length, 'slots for', selectedLocalDateStr);
-                    return slots;
+                    // Sort by time
+                    const sortedSlots = slots.sort((a, b) => new Date(a.start_at) - new Date(b.start_at));
+                    
+                    console.log('🔍 selectedDateSlots: Found', sortedSlots.length, 'slots for', selectedLocalDateStr);
+                    return sortedSlots;
                 },
 
                 get selectedDateFormatted() {
@@ -991,27 +1092,6 @@
                     return date;
                 },
 
-                formatTime(dateTimeString) {
-                    const date = new Date(dateTimeString);
-                    const timezone = this.timezones[this.selectedTimezone];
-                    
-                    // Create a proper timezone offset string
-                    const offsetHours = Math.floor(Math.abs(timezone.offset));
-                    const offsetMinutes = (Math.abs(timezone.offset) % 1) * 60;
-                    const offsetSign = timezone.offset >= 0 ? '+' : '-';
-                    const offsetString = `${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
-                    
-                    // Convert UTC to selected timezone manually
-                    const utcTime = date.getTime();
-                    const localTime = new Date(utcTime + (timezone.offset * 60 * 60 * 1000));
-                    
-                    return localTime.toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                    });
-                },
-
                 formatDate(dateTimeString) {
                     const date = new Date(dateTimeString);
                     return date.toLocaleDateString('en-US', {
@@ -1047,13 +1127,22 @@
                                                 String(date.getDate()).padStart(2, '0');
                     
                     const hasSlots = this.availableSlots.some(slot => {
-                        // Parse UTC time and convert to local date for comparison
-                        const slotDate = new Date(slot.start_at);
-                        const slotLocalDateStr = slotDate.getFullYear() + '-' + 
-                                               String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                               String(slotDate.getDate()).padStart(2, '0');
+                        if (!slot || !slot.start_at) return false;
                         
-                        return slotLocalDateStr === calendarLocalDateStr;
+                        try {
+                            // Parse the slot time (stored as GMT+4 local time)
+                            const slotDate = new Date(slot.start_at);
+                            
+                            // Get just the date part in local timezone (GMT+4)
+                            const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                                   String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                   String(slotDate.getDate()).padStart(2, '0');
+                            
+                            return slotLocalDateStr === calendarLocalDateStr;
+                        } catch (error) {
+                            console.error('Error processing slot date:', error);
+                            return false;
+                        }
                     });
                     
                     return hasSlots;
@@ -1066,13 +1155,22 @@
                                                 String(date.getDate()).padStart(2, '0');
                     
                     return this.availableSlots.filter(slot => {
-                        // Parse UTC time and convert to local date for comparison
-                        const slotDate = new Date(slot.start_at);
-                        const slotLocalDateStr = slotDate.getFullYear() + '-' + 
-                                               String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                               String(slotDate.getDate()).padStart(2, '0');
+                        if (!slot || !slot.start_at) return false;
                         
-                        return slotLocalDateStr === calendarLocalDateStr;
+                        try {
+                            // Parse the slot time (stored as GMT+4 local time)
+                            const slotDate = new Date(slot.start_at);
+                            
+                            // Get just the date part in local timezone (GMT+4)
+                            const slotLocalDateStr = slotDate.getFullYear() + '-' + 
+                                                   String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                                   String(slotDate.getDate()).padStart(2, '0');
+                            
+                            return slotLocalDateStr === calendarLocalDateStr;
+                        } catch (error) {
+                            console.error('Error processing slot date for count:', error);
+                            return false;
+                        }
                     }).length;
                 }
             }
