@@ -127,25 +127,75 @@
                     </p>
                 </div>
 
-                <!-- Loading State -->
-                <div x-show="isLoading" class="text-center py-12">
-                    <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-brand-charcoal/70">Loading available appointments...</p>
+                <!-- Loading State with Calendar Skeleton -->
+                <div x-show="isLoading" class="max-w-6xl mx-auto">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-2">
+                            
+                            <!-- Left Side: Calendar Skeleton -->
+                            <div class="p-8 border-r border-brand-cream animate-pulse">
+                                <!-- Calendar Header Skeleton -->
+                                <div class="h-6 bg-gray-200 rounded w-48 mb-6"></div>
+                                
+                                <!-- Month Navigation Skeleton -->
+                                <div class="flex justify-between items-center mb-6">
+                                    <div class="w-8 h-8 bg-gray-200 rounded"></div>
+                                    <div class="h-6 bg-gray-200 rounded w-32"></div>
+                                    <div class="w-8 h-8 bg-gray-200 rounded"></div>
+                                </div>
+                                
+                                <!-- Calendar Days Header Skeleton -->
+                                <div class="grid grid-cols-7 gap-1 text-center text-sm mb-2">
+                                    <template x-for="i in 7">
+                                        <div class="h-8 bg-gray-100 rounded"></div>
+                                    </template>
+                                </div>
+                                
+                                <!-- Calendar Grid Skeleton -->
+                                <div class="grid grid-cols-7 gap-1 mb-8">
+                                    <template x-for="i in 35">
+                                        <div class="aspect-square bg-gray-100 rounded-lg"></div>
+                                    </template>
+                                </div>
+                                
+                                <!-- Timezone Selector Skeleton -->
+                                <div class="space-y-2">
+                                    <div class="h-4 bg-gray-200 rounded w-20"></div>
+                                    <div class="h-12 bg-gray-100 rounded"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Side: Content Skeleton -->
+                            <div class="p-8 bg-brand-cream/30 animate-pulse">
+                                <!-- Initial state skeleton -->
+                                <div class="text-center py-12">
+                                    <div class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-48 mx-auto"></div>
+                                </div>
+                                
+                                <!-- Additional skeleton content -->
+                                <div class="space-y-4 mt-8">
+                                    <div class="h-4 bg-gray-200 rounded w-full"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Text -->
+                    <div class="text-center py-6">
+                        <div class="loading-spinner mx-auto mb-4"></div>
+                        <p class="text-brand-charcoal/70 animate-pulse">Loading available appointments...</p>
+                    </div>
                 </div>
 
-                <!-- Debug Panel -->
-                                <!-- Error State -->
-                <div x-show="error" class="bg-brand-cream border border-brand-maroon text-brand-maroon px-4 py-3 rounded mb-6">
-                    <strong>Error:</strong> <span x-text="error"></span>
-                </div>
-
-                <!-- Success Message -->
-                <div x-show="successMessage" class="bg-brand-green/20 border border-brand-green text-brand-green px-4 py-3 rounded mb-6">
-                    <strong>Success:</strong> <span x-text="successMessage"></span>
-                </div>
-
-                <!-- Booking Form -->
-                <div x-show="!isLoading" class="max-w-6xl mx-auto">
+                <!-- Actual Booking Interface -->
+                <div x-show="!isLoading" 
+                     x-transition:enter="transition ease-out duration-500"
+                     x-transition:enter-start="opacity-0 transform translate-y-4"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     class="max-w-6xl mx-auto">
                     
                     <!-- Main Booking Interface -->
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -161,11 +211,13 @@
                                 <div>
                                     <!-- Month Navigation -->
                                     <div class="flex justify-between items-center mb-6">
-                                        <button @click="prevMonth()" class="p-2 hover:bg-brand-cream rounded">
+                                        <button @click="prevMonth()" 
+                                                class="p-2 hover:bg-brand-cream rounded transition-colors">
                                             <i class="fas fa-chevron-left text-brand-charcoal"></i>
                                         </button>
                                         <h4 class="text-lg font-medium text-brand-maroon" x-text="monthYear"></h4>
-                                        <button @click="nextMonth()" class="p-2 hover:bg-brand-cream rounded">
+                                        <button @click="nextMonth()" 
+                                                class="p-2 hover:bg-brand-cream rounded transition-colors">
                                             <i class="fas fa-chevron-right text-brand-charcoal"></i>
                                         </button>
                                     </div>
@@ -217,7 +269,8 @@
                                 <!-- Time Zone -->
                                 <div class="mt-8">
                                     <label class="block text-sm font-medium text-brand-maroon mb-2">Time zone</label>
-                                    <select x-model="selectedTimezone" @change="updateTimezone()" class="w-full p-3 border border-brand-cream rounded-lg bg-white focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
+                                    <select x-model="selectedTimezone" @change="updateTimezone()" 
+                                            class="w-full p-3 border border-brand-cream rounded-lg bg-white focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20">
                                         <option value="GMT+04:00">GMT+04:00 Asia/Dubai (GMT+4)</option>
                                         <option value="GMT+00:00">GMT+00:00 UTC (GMT+0)</option>
                                         <option value="GMT+01:00">GMT+01:00 Europe/London (GMT+1)</option>
@@ -448,9 +501,327 @@
 
                     <!-- Remove the old separate booking form section -->
                 </div>
+
+                <!-- Error State -->
+                <div x-show="error" class="bg-brand-cream border border-brand-maroon text-brand-maroon px-4 py-3 rounded mb-6">
+                    <strong>Error:</strong> <span x-text="error"></span>
+                </div>
+
+                <!-- Success Message -->
+                <div x-show="successMessage" class="bg-brand-green/20 border border-brand-green text-brand-green px-4 py-3 rounded mb-6">
+                    <strong>Success:</strong> <span x-text="successMessage"></span>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- Testimonials Section -->
+    <section class="bg-brand-green py-12 sm:py-16 lg:py-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-10 sm:mb-12 lg:mb-16">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-brand-gold font-decorative">
+                        What Our Clients Say
+                    </h2>
+                    <p class="text-lg sm:text-xl lg:text-2xl text-brand-cream/90 max-w-3xl mx-auto">
+                        Trusted by hundreds of clients for exceptional legal services
+                    </p>
+                </div>
+
+                <!-- Testimonials Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-brand-cream/20 rounded-lg sm:rounded-xl p-6 sm:p-8 relative hover:bg-brand-cream/30 transition-colors group">
+                        <div class="absolute top-4 left-4 text-brand-gold text-2xl sm:text-3xl group-hover:scale-110 transition-transform">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <div class="pt-8 sm:pt-10">
+                            <p class="text-brand-cream/90 mb-6 sm:mb-8 italic leading-relaxed text-sm sm:text-base">
+                                "JUSTYTA provided exceptional legal guidance during my business setup. Their expertise in UAE commercial law saved me both time and money. Highly professional service!"
+                            </p>
+                            <div class="border-t border-brand-gold/30 pt-4">
+                                <h4 class="font-semibold text-brand-cream text-sm sm:text-base">Sarah Ahmed</h4>
+                                <p class="text-brand-cream/70 text-xs sm:text-sm">Business Owner</p>
+                                <div class="flex text-brand-gold mt-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="bg-brand-cream/20 rounded-lg sm:rounded-xl p-6 sm:p-8 relative hover:bg-brand-cream/30 transition-colors group">
+                        <div class="absolute top-4 left-4 text-brand-gold text-2xl sm:text-3xl group-hover:scale-110 transition-transform">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <div class="pt-8 sm:pt-10">
+                            <p class="text-brand-cream/90 mb-6 sm:mb-8 italic leading-relaxed text-sm sm:text-base">
+                                "The family law consultation was incredibly helpful. The lawyer was patient, understanding, and provided clear guidance throughout the process. Thank you!"
+                            </p>
+                            <div class="border-t border-brand-gold/30 pt-4">
+                                <h4 class="font-semibold text-brand-cream text-sm sm:text-base">Mohammed Al-Rashid</h4>
+                                <p class="text-brand-cream/70 text-xs sm:text-sm">Client</p>
+                                <div class="flex text-brand-gold mt-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="bg-brand-cream/20 rounded-lg sm:rounded-xl p-6 sm:p-8 relative hover:bg-brand-cream/30 transition-colors group md:col-span-2 lg:col-span-1">
+                        <div class="absolute top-4 left-4 text-brand-gold text-2xl sm:text-3xl group-hover:scale-110 transition-transform">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <div class="pt-8 sm:pt-10">
+                            <p class="text-brand-cream/90 mb-6 sm:mb-8 italic leading-relaxed text-sm sm:text-base">
+                                "Professional, efficient, and knowledgeable. JUSTYTA handled my property dispute with expertise and achieved a favorable outcome. Excellent service!"
+                            </p>
+                            <div class="border-t border-brand-gold/30 pt-4">
+                                <h4 class="font-semibold text-brand-cream text-sm sm:text-base">Lisa Chen</h4>
+                                <p class="text-brand-cream/70 text-xs sm:text-sm">Real Estate Investor</p>
+                                <div class="flex text-brand-gold mt-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Row -->
+                <div class="mt-12 sm:mt-16 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-center">
+                    <div class="bg-brand-cream/10 rounded-lg p-4 sm:p-6 hover:bg-brand-cream/20 transition-colors">
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-gold mb-2">500+</div>
+                        <div class="text-brand-cream/80 text-sm sm:text-base">Happy Clients</div>
+                    </div>
+                    <div class="bg-brand-cream/10 rounded-lg p-4 sm:p-6 hover:bg-brand-cream/20 transition-colors">
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-gold mb-2">98%</div>
+                        <div class="text-brand-cream/80 text-sm sm:text-base">Success Rate</div>
+                    </div>
+                    <div class="bg-brand-cream/10 rounded-lg p-4 sm:p-6 hover:bg-brand-cream/20 transition-colors">
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-gold mb-2">24/7</div>
+                        <div class="text-brand-cream/80 text-sm sm:text-base">Support</div>
+                    </div>
+                    <div class="bg-brand-cream/10 rounded-lg p-4 sm:p-6 hover:bg-brand-cream/20 transition-colors">
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-gold mb-2">5★</div>
+                        <div class="text-brand-cream/80 text-sm sm:text-base">Average Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-maroon text-brand-white py-8 sm:py-12 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Footer Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+                    
+                    <!-- Company Info -->
+                    <div class="sm:col-span-2 lg:col-span-1 text-center sm:text-left">
+                        <!-- Logo and Company Name -->
+                        <div class="flex items-center justify-center sm:justify-start space-x-2 sm:space-x-3 mb-4 sm:mb-3 lg:mb-4">
+                            <img src="assets/images/JUSTYTA Logo transparent.png" alt="JUSTYTA" class="h-8 sm:h-10 lg:h-12 w-auto">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-bold font-decorative">JUSTYTA</span>
+                        </div>
+                        
+                        <!-- Company Description -->
+                        <p class="text-brand-white/80 mb-4 sm:mb-3 lg:mb-4 text-sm sm:text-base lg:text-lg leading-relaxed">
+                            Your trusted legal partner providing expert guidance and professional services across all areas of law.
+                        </p>
+                        
+                        <!-- Social Media Links -->
+                        <div class="flex justify-center sm:justify-start space-x-3 sm:space-x-4">
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-facebook text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-twitter text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-linkedin text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-instagram text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Services Column -->
+                    <div class="text-center sm:text-left">
+                        <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-4 sm:mb-3 lg:mb-4 text-brand-white 
+                                   border-b border-brand-gold/30 pb-2 sm:border-b-0 sm:pb-0">
+                            Our Services
+                        </h4>
+                        <ul class="space-y-2 sm:space-y-1 lg:space-y-2">
+                            <li>
+                                <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                  text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    Corporate Law
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                  text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    Family Law
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                  text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    Real Estate Law
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                  text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    Criminal Defense
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                  text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    Immigration Law
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Contact Column -->
+                    <div class="text-center sm:text-left">
+                        <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-4 sm:mb-3 lg:mb-4 text-brand-white 
+                                   border-b border-brand-gold/30 pb-2 sm:border-b-0 sm:pb-0">
+                            Contact Info
+                        </h4>
+                        <div class="space-y-2 sm:space-y-1 lg:space-y-3 text-brand-white/80 text-sm sm:text-base lg:text-lg">
+                            <!-- Address -->
+                            <div class="flex items-start justify-center sm:justify-start">
+                                <i class="fas fa-map-marker-alt text-brand-gold mr-2 sm:mr-3 mt-1 flex-shrink-0"></i>
+                                <p class="leading-relaxed">
+                                    Dubai Business Bay<br>
+                                    United Arab Emirates
+                                </p>
+                            </div>
+                            
+                            <!-- Phone -->
+                            <div class="flex items-center justify-center sm:justify-start">
+                                <i class="fas fa-phone text-brand-gold mr-2 sm:mr-3 flex-shrink-0"></i>
+                                <a href="tel:+971555123456" class="hover:text-brand-gold transition-colors">
+                                    +971 55 512 3456
+                                </a>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="flex items-center justify-center sm:justify-start">
+                                <i class="fas fa-envelope text-brand-gold mr-2 sm:mr-3 flex-shrink-0"></i>
+                                <a href="mailto:info@justyta.com" class="hover:text-brand-gold transition-colors">
+                                    info@justyta.com
+                                </a>
+                            </div>
+
+                            <!-- Working Hours -->
+                            <div class="flex items-start justify-center sm:justify-start pt-2">
+                                <i class="fas fa-clock text-brand-gold mr-2 sm:mr-3 mt-1 flex-shrink-0"></i>
+                                <div class="leading-relaxed">
+                                    <p>Sun - Thu: 9:00 AM - 6:00 PM</p>
+                                    <p>Fri - Sat: Closed</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links Column -->
+                    <div class="text-center sm:text-left">
+                        <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-4 sm:mb-3 lg:mb-4 text-brand-white 
+                                   border-b border-brand-gold/30 pb-2 sm:border-b-0 sm:pb-0">
+                            Quick Links
+                        </h4>
+                        <ul class="space-y-2 sm:space-y-1 lg:space-y-2">
+                            <li>
+                                <a href="index.html" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                         text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    <i class="fas fa-home mr-2 text-xs"></i>
+                                    Home
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index.html#about" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                               text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    <i class="fas fa-info-circle mr-2 text-xs"></i>
+                                    About Us
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index.html#services" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                                 text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    <i class="fas fa-briefcase mr-2 text-xs"></i>
+                                    Services
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                 text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    <i class="fas fa-calendar-check mr-2 text-xs"></i>
+                                    Book Appointment
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index.html#contact" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                                text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">
+                                    <i class="fas fa-envelope mr-2 text-xs"></i>
+                                    Contact
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Footer Bottom -->
+                <div class="border-t border-brand-white/20 mt-8 sm:mt-6 lg:mt-8 pt-6 sm:pt-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                        <!-- Copyright -->
+                        <p class="text-brand-white/60 text-xs sm:text-sm lg:text-base text-center sm:text-left">
+                            © 2024 JUSTYTA Legal Services. All rights reserved.
+                        </p>
+                        
+                        <!-- Mobile Emergency Button -->
+                        <div class="sm:hidden w-full max-w-sm">
+                            <a href="tel:+971555123456" 
+                               class="block w-full text-center bg-brand-gold text-brand-maroon font-semibold 
+                                      py-3 px-6 rounded-lg hover:bg-brand-lime transition-colors">
+                                <i class="fas fa-phone mr-2"></i>
+                                Emergency Contact
+                            </a>
+                        </div>
+                        
+                        <!-- Desktop Additional Links -->
+                        <div class="hidden sm:flex space-x-4 lg:space-x-6 text-xs sm:text-sm lg:text-base">
+                            <a href="#" class="text-brand-white/60 hover:text-brand-gold transition-colors">Privacy Policy</a>
+                            <span class="text-brand-white/40">|</span>
+                            <a href="#" class="text-brand-white/60 hover:text-brand-gold transition-colors">Terms of Service</a>
+                            <span class="text-brand-white/40">|</span>
+                            <a href="#" class="text-brand-white/60 hover:text-brand-gold transition-colors">Legal Notice</a>
+                            <span class="text-brand-white/40">|</span>
+                            <a href="#" class="text-brand-white/60 hover:text-brand-gold transition-colors">Sitemap</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Success Modal -->
     <div x-show="showSuccess" 
