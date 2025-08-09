@@ -125,14 +125,6 @@
                     <p class="text-xl text-brand-charcoal/80">
                         Schedule your consultation at your convenience
                     </p>
-                    
-                    <!-- Refresh Button -->
-                    <button 
-                        @click="loadAvailableSlots()" 
-                        class="mt-4 px-4 py-2 bg-brand-gold text-brand-maroon rounded-lg hover:bg-brand-lime transition-colors text-sm font-medium">
-                        <i class="fas fa-sync-alt mr-2"></i>
-                        Refresh Calendar
-                    </button>
                 </div>
 
                 <!-- Loading State -->
@@ -381,44 +373,18 @@
                                         </div>
                                         
                                         <div>
-                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Phone Number</label>
+                                            <label class="block text-sm font-medium text-brand-maroon mb-2">Phone Number *</label>
                                             <div class="flex">
                                                 <!-- Country Code Selector -->
                                                 <select 
                                                     x-model="form.countryCode"
                                                     class="p-3 border border-brand-cream rounded-l-lg bg-white focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-opacity-20 border-r-0 min-w-[100px]">
                                                     <option value="+971">🇦🇪 +971</option>
-                                                    <option value="+1">🇺🇸 +1</option>
-                                                    <option value="+44">🇬🇧 +44</option>
-                                                    <option value="+91">🇮🇳 +91</option>
-                                                    <option value="+92">🇵🇰 +92</option>
                                                     <option value="+966">🇸🇦 +966</option>
                                                     <option value="+974">🇶🇦 +974</option>
                                                     <option value="+968">🇴🇲 +968</option>
                                                     <option value="+965">🇰🇼 +965</option>
                                                     <option value="+973">🇧🇭 +973</option>
-                                                    <option value="+20">🇪🇬 +20</option>
-                                                    <option value="+962">🇯🇴 +962</option>
-                                                    <option value="+961">🇱🇧 +961</option>
-                                                    <option value="+49">🇩🇪 +49</option>
-                                                    <option value="+33">🇫🇷 +33</option>
-                                                    <option value="+39">🇮🇹 +39</option>
-                                                    <option value="+34">🇪🇸 +34</option>
-                                                    <option value="+86">🇨🇳 +86</option>
-                                                    <option value="+81">🇯🇵 +81</option>
-                                                    <option value="+65">🇸🇬 +65</option>
-                                                    <option value="+60">🇲🇾 +60</option>
-                                                    <option value="+66">🇹🇭 +66</option>
-                                                    <option value="+84">🇻🇳 +84</option>
-                                                    <option value="+63">🇵🇭 +63</option>
-                                                    <option value="+62">🇮🇩 +62</option>
-                                                    <option value="+61">🇦🇺 +61</option>
-                                                    <option value="+64">🇳🇿 +64</option>
-                                                    <option value="+27">🇿🇦 +27</option>
-                                                    <option value="+55">🇧🇷 +55</option>
-                                                    <option value="+52">🇲🇽 +52</option>
-                                                    <option value="+7">🇷🇺 +7</option>
-                                                    <option value="+90">🇹🇷 +90</option>
                                                 </select>
                                                 
                                                 <!-- Phone Number Input -->
@@ -607,6 +573,9 @@
                                                 String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                                                 String(date.getDate()).padStart(2, '0');
                     
+                    // Get current time for comparison
+                    const now = new Date();
+                    
                     const hasSlots = this.availableSlots.some(slot => {
                         if (!slot || !slot.start_at) return false;
                         
@@ -619,7 +588,11 @@
                                                    String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
                                                    String(slotDate.getDate()).padStart(2, '0');
                             
-                            return slotLocalDateStr === calendarLocalDateStr;
+                            // Check if it matches the date AND is in the future
+                            const dateMatches = slotLocalDateStr === calendarLocalDateStr;
+                            const isNotPast = slotDate > now;
+                            
+                            return dateMatches && isNotPast;
                         } catch (error) {
                             console.error('Error processing slot date:', error);
                             return false;
@@ -636,6 +609,9 @@
                                                 String(date.getMonth() + 1).padStart(2, '0') + '-' + 
                                                 String(date.getDate()).padStart(2, '0');
                     
+                    // Get current time for comparison
+                    const now = new Date();
+                    
                     return this.availableSlots.filter(slot => {
                         if (!slot || !slot.start_at) return false;
                         
@@ -648,7 +624,11 @@
                                                    String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
                                                    String(slotDate.getDate()).padStart(2, '0');
                             
-                            return slotLocalDateStr === calendarLocalDateStr;
+                            // Check if it matches the date AND is in the future
+                            const dateMatches = slotLocalDateStr === calendarLocalDateStr;
+                            const isNotPast = slotDate > now;
+                            
+                            return dateMatches && isNotPast;
                         } catch (error) {
                             console.error('Error processing slot date for count:', error);
                             return false;
@@ -671,6 +651,9 @@
                     console.log('🔍 selectedDateSlots: Looking for slots on', selectedLocalDateStr);
                     console.log('🔍 Total available slots:', this.availableSlots.length);
                     
+                    // Get current time for comparison
+                    const now = new Date();
+                    
                     const slots = this.availableSlots.filter(slot => {
                         if (!slot || !slot.start_at) {
                             console.warn('Invalid slot:', slot);
@@ -686,11 +669,23 @@
                                                    String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
                                                    String(slotDate.getDate()).padStart(2, '0');
                             
-                            const matches = slotLocalDateStr === selectedLocalDateStr;
-                            if (matches) {
-                                console.log('🔍 Found matching slot:', slot.start_at, '→', slotLocalDateStr);
+                            // Check if it matches the selected date
+                            const dateMatches = slotLocalDateStr === selectedLocalDateStr;
+                            
+                            // Additional check: exclude past time slots
+                            const isNotPast = slotDate > now;
+                            
+                            if (dateMatches && !isNotPast) {
+                                console.log('� Filtering out past slot:', slot.start_at, 'vs now:', now.toISOString());
                             }
-                            return matches;
+                            
+                            const shouldInclude = dateMatches && isNotPast;
+                            
+                            if (shouldInclude) {
+                                console.log('🔍 Found valid future slot:', slot.start_at, '→', slotLocalDateStr);
+                            }
+                            
+                            return shouldInclude;
                         } catch (error) {
                             console.error('Error processing slot:', slot, error);
                             return false;
@@ -700,7 +695,7 @@
                     // Sort by time
                     const sortedSlots = slots.sort((a, b) => new Date(a.start_at) - new Date(b.start_at));
                     
-                    console.log('🔍 selectedDateSlots: Found', sortedSlots.length, 'slots for', selectedLocalDateStr);
+                    console.log('🔍 selectedDateSlots: Found', sortedSlots.length, 'future slots for', selectedLocalDateStr);
                     return sortedSlots;
                 },
 
@@ -1118,60 +1113,6 @@
                         day: 'numeric',
                         year: 'numeric'
                     });
-                },
-
-                hasSlots(date) {
-                    // Get the local date string (YYYY-MM-DD) from the calendar date
-                    const calendarLocalDateStr = date.getFullYear() + '-' + 
-                                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                                                String(date.getDate()).padStart(2, '0');
-                    
-                    const hasSlots = this.availableSlots.some(slot => {
-                        if (!slot || !slot.start_at) return false;
-                        
-                        try {
-                            // Parse the slot time (stored as GMT+4 local time)
-                            const slotDate = new Date(slot.start_at);
-                            
-                            // Get just the date part in local timezone (GMT+4)
-                            const slotLocalDateStr = slotDate.getFullYear() + '-' + 
-                                                   String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                                   String(slotDate.getDate()).padStart(2, '0');
-                            
-                            return slotLocalDateStr === calendarLocalDateStr;
-                        } catch (error) {
-                            console.error('Error processing slot date:', error);
-                            return false;
-                        }
-                    });
-                    
-                    return hasSlots;
-                },
-
-                getSlotCount(date) {
-                    // Get the local date string (YYYY-MM-DD) from the calendar date
-                    const calendarLocalDateStr = date.getFullYear() + '-' + 
-                                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                                                String(date.getDate()).padStart(2, '0');
-                    
-                    return this.availableSlots.filter(slot => {
-                        if (!slot || !slot.start_at) return false;
-                        
-                        try {
-                            // Parse the slot time (stored as GMT+4 local time)
-                            const slotDate = new Date(slot.start_at);
-                            
-                            // Get just the date part in local timezone (GMT+4)
-                            const slotLocalDateStr = slotDate.getFullYear() + '-' + 
-                                                   String(slotDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                                                   String(slotDate.getDate()).padStart(2, '0');
-                            
-                            return slotLocalDateStr === calendarLocalDateStr;
-                        } catch (error) {
-                            console.error('Error processing slot date for count:', error);
-                            return false;
-                        }
-                    }).length;
                 }
             }
         }
