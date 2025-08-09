@@ -30,18 +30,18 @@
 <body class="bg-brand-white text-brand-maroon font-sans leading-normal tracking-normal relative" x-data="app()">
 
     <!-- Language Switcher -->
-    <div class="fixed top-2 right-4 z-50">
-        <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-brand-gold/20 p-2">
-            <div class="flex gap-2">
+    <div class="fixed top-2 right-2 sm:right-4 lg:right-6 z-50">
+        <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-brand-gold/20 p-1.5 sm:p-2">
+            <div class="flex gap-1 sm:gap-2">
                 <button 
                     @click="switchLang('en')"
-                    class="px-3 py-1 rounded text-sm font-medium transition-all duration-200"
+                    class="px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm font-medium transition-all duration-200"
                     :class="currentLang === 'en' ? 'bg-brand-gold text-white' : 'text-brand-maroon hover:bg-brand-cream'">
                     EN
                 </button>
                 <button 
                     @click="switchLang('ar')"
-                    class="px-3 py-1 rounded text-sm font-medium transition-all duration-200"
+                    class="px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm font-medium transition-all duration-200"
                     :class="currentLang === 'ar' ? 'bg-brand-gold text-white' : 'text-brand-maroon hover:bg-brand-cream'">
                     العربية
                 </button>
@@ -50,82 +50,88 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-40 bg-brand-gold/95  backdrop-blur-lg border-b border-brand-gold/30">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4" style="direction: ltr !important;">
-                <!-- Logo -->
-                <div class="flex items-center space-x-3" style="direction: ltr !important; margin-right: auto !important; margin-left: 0 !important; order: -1 !important;">
-                    <img src="assets/images/JUSTYTA Logo transparent.png" alt="JUSTYTA" class="h-8 w-auto">
-                    <span class="text-xl font-bold text-brand-white› font-decorative">JUSTYTA</span>
+    <nav class="fixed top-0 left-0 right-0 z-40 bg-brand-gold/95 backdrop-blur-lg border-b border-brand-gold/30">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center py-3 sm:py-4 lg:py-5" style="direction: ltr !important;">
+                <!-- Logo - Absolutely Fixed Position -->
+                <div class="flex items-center space-x-2 sm:space-x-3" 
+                     style="direction: ltr !important; position: relative; z-index: 10;">
+                    <img src="assets/images/JUSTYTA Logo transparent.png" 
+                         alt="JUSTYTA" 
+                         class="h-6 sm:h-8 lg:h-10 w-auto flex-shrink-0"
+                         style="direction: ltr !important;">
+                    <span class="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-brand-white font-decorative whitespace-nowrap"
+                          style="direction: ltr !important; unicode-bidi: bidi-override;">
+                        JUSTYTA
+                    </span>
                 </div>
 
-                <!-- Desktop Menu -->
-               
-                <!-- Mobile Menu Button -->
-                <button @click="toggleMobileMenu()" class="md:hidden text-brand-maroon">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
+                <!-- Flexible spacer -->
+                <div class="flex-grow"></div>
 
-            <!-- Mobile Menu -->
-            
+                <!-- Mobile Menu Button - Absolutely Fixed Right Position -->
+                <div class="lg:hidden" style="direction: ltr !important; position: relative; z-index: 10;">
+                    <button @click="toggleMobileMenu()" 
+                            class="text-brand-maroon p-2 hover:bg-brand-white/10 rounded-lg transition-colors"
+                            style="direction: ltr !important;">
+                        <i class="fas fa-bars text-lg sm:text-xl" style="direction: ltr !important;"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
 
     <!-- Header/Hero Section -->
-    <header id="hero" class="bg-brand-green/95 backdrop-blur-lg border-b border-brand-gold/30 pt-20">
-        <div class="container mx-auto px-4 py-20">
+    <header id="hero" class="bg-brand-green/95 backdrop-blur-lg border-b border-brand-gold/30 pt-16 sm:pt-20 lg:pt-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 xl:py-24">
             <!-- Hero Content -->
-            <div class="text-center animate-fade-in-up">
-                <h1 class="text-5xl md:text-6xl font-bold
+            <div class="text-center animate-fade-in-up max-w-7xl mx-auto">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold
                            bg-gradient-to-r from-brand-gold via-brand-lime to-brand-cream
                            bg-clip-text text-transparent
-                           font-decorative tracking-wide leading-tight mb-6"
+                           font-decorative tracking-wide leading-tight mb-4 sm:mb-6 lg:mb-8"
                     x-html="__('hero.heading')">
                 </h1>
 
-                <div class="mt-6 space-y-4 max-w-3xl mx-auto
-                            text-xl md:text-2xl font-medium text-brand-cream/90">
+                <div class="mt-4 sm:mt-6 lg:mt-8 space-y-3 sm:space-y-4 lg:space-y-6 max-w-2xl sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto
+                            text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-medium text-brand-cream/90">
                     <p x-html="__('hero.sub1')"></p>
                     <p x-html="__('hero.sub2')"></p>
                     <p x-html="__('hero.sub3')"></p>
                 </div>
 
-                <!-- CTA Button -->
-                <!--
-                <div class="mt-12">
-                    <a href="#contact" class="btn-primary bg-brand-gold text-brand-maroon hover:bg-brand-lime transition-all">
-                        <span x-text="__('hero.book_now')"></span>
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div>
-                -->
-
                 <!-- YouTube Video Section -->
-                <div class="mt-16">
-                    <div class="max-w-4xl mx-auto">
-                        <h3 class="text-2xl md:text-3xl font-bold text-center mb-8 text-brand-gold"
+                <div class="mt-10 sm:mt-12 lg:mt-16 xl:mt-20">
+                    <div class="max-w-2xl sm:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto">
+                        <h3 class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-center mb-6 sm:mb-8 lg:mb-10 text-brand-gold"
                             x-text="__('hero.video_title')">
                         </h3>
-                        <div class="video-container rounded-xl overflow-hidden shadow-lg border border-brand-gold/30">
+                        <div class="video-container rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-brand-gold/30">
+                            <!-- Dynamic Video Based on Language -->
                             <iframe 
                                 class="w-full h-full"
-                                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
-                                title="JUSTYTA Legal Services Introduction"
+                                :src="currentLang === 'en' 
+                                    ? 'https://www.youtube.com/embed/9nVEfjmDlVk?si=NnAP5Epih5aV_QAo' 
+                                    : 'https://www.youtube.com/embed/3JoAmWzUf4s?si=fqUrbpkLtGWo-ErB'"
+                                :title="currentLang === 'en' 
+                                    ? 'JUSTYTA Legal Services Introduction - English' 
+                                    : 'خدمات جستيتا القانونية - العربية'"
                                 frameborder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                allowfullscreen>
+                                allowfullscreen
+                                :key="currentLang">
                             </iframe>
                         </div>
-                        <!-- Second Book Now Button -->
-                        <div class="text-center mt-8">
+                        <!-- Book Now Button in Hero Section -->
+                        <div class="text-center mt-6 sm:mt-8 lg:mt-10">
                             <a href="bookings-page.html"
-                               class="inline-block btn-secondary bg-brand-gold text-brand-maroon
-                                      hover:bg-brand-lime transition-all
-                                      px-20 py-5 text-lg
-                                      w-full max-w-xs sm:w-auto">
+                               class="inline-block bg-brand-gold text-brand-maroon hover:bg-brand-lime transition-all duration-300
+                                      px-8 sm:px-12 lg:px-16 xl:px-20 2xl:px-24 py-3 sm:py-4 lg:py-5 xl:py-6
+                                      text-base sm:text-lg lg:text-xl xl:text-2xl font-semibold rounded-lg lg:rounded-xl
+                                      transform hover:scale-105 shadow-lg hover:shadow-xl
+                                      w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl">
                                 <span x-text="__('hero.book_now')"></span>
-                                <i class="fas fa-calendar-check ml-2"></i>
+                                <i class="fas fa-calendar-check ml-3 sm:ml-4"></i>
                             </a>
                         </div>
                     </div>
@@ -135,129 +141,146 @@
     </header>
 
     <!-- Problem Section -->
-    <section id="problem" class="bg-brand-cream/50 py-24">
-        <div class="container mx-auto px-4">
-            <!-- Heading -->
-            <h2 class="text-4xl md:text-5xl font-bold text-center gradient-text-primary mb-4"
-                x-text="__('problem.title')">
-            </h2>
-            <p class="text-xl text-center mb-14 max-w-2xl mx-auto text-brand-charcoal/80"
-               x-text="__('problem.subtitle')">
-            </p>
+    <section id="problem" class="bg-brand-cream/50 py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Heading -->
+                <div class="text-center mb-8 sm:mb-10 lg:mb-14 xl:mb-16">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold gradient-text-primary mb-3 sm:mb-4 lg:mb-6"
+                        x-text="__('problem.title')">
+                    </h2>
+                    <p class="text-base sm:text-lg lg:text-xl xl:text-2xl max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto text-brand-charcoal/80 leading-relaxed"
+                       x-text="__('problem.subtitle')">
+                    </p>
+                </div>
 
-            <!-- 4-Column Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <template x-for="(card, index) in __('problem.cards')" :key="index">
-                    <div class="card group">
-                        <div class="mb-4 p-3 rounded-full bg-gradient-to-br from-brand-lime/20 to-brand-teal/20">
-                            <i class="fas fa-chart-line text-2xl text-brand-green"></i>
+                <!-- Responsive Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                    <template x-for="(card, index) in __('problem.cards')" :key="index">
+                        <div class="card group bg-white rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-8 
+                                    hover:shadow-lg transition-all duration-300 border border-brand-cream/50">
+                            <div class="mb-3 sm:mb-4 lg:mb-6 p-2 sm:p-3 lg:p-4 rounded-full bg-gradient-to-br from-brand-lime/20 to-brand-teal/20 w-fit mx-auto sm:mx-0">
+                                <i class="fas fa-chart-line text-xl sm:text-2xl lg:text-3xl text-brand-green"></i>
+                            </div>
+                            <h3 class="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3 lg:mb-4 text-brand-maroon text-center sm:text-left" x-text="card.title"></h3>
+                            <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-brand-charcoal/80 leading-relaxed text-center sm:text-left" x-text="card.text"></p>
                         </div>
-                        <h3 class="text-lg font-bold mb-2 text-brand-maroon" x-text="card.title"></h3>
-                        <p class="text-sm text-brand-charcoal/80 leading-relaxed" x-text="card.text"></p>
-                    </div>
-                </template>
+                    </template>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Services Section with Animated Stats -->
-    <section id="services" class="bg-brand-cream/50 py-24">
-        <div class="container mx-auto px-4 max-w-6xl">
-            
-            <!-- Two-column layout -->
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-center">
+    <section id="services" class="bg-brand-cream/50 py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Responsive layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 xl:gap-16 items-center">
 
-                <!-- LEFT (60%) -->
-                <div class="lg:col-span-3 space-y-6">
+                    <!-- LEFT Content -->
+                    <div class="lg:col-span-3 space-y-4 sm:space-y-6 lg:space-y-8 text-center lg:text-left">
 
-                    <!-- Badge -->
-                    <span class="inline-block text-base md:text-lg font-bold tracking-widest uppercase gradient-text-primary"
-                          x-text="__('services.badge')">
-                    </span>
-                    
-                    <!-- Heading -->
-                    <h2 class="text-4xl md:text-5xl font-bold leading-[1.3] gradient-text-secondary"
-                        x-html="__('services.heading').replace(/\\n/g, '<br>')">
-                    </h2>
-
-                    <!-- Description -->
-                    <p class="text-lg text-brand-charcoal/80 leading-relaxed"
-                       x-text="__('services.description')">
-                    </p>
-
-                    <!-- Animated Statistics -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4">
-                        <!-- Satisfaction Stat -->
-                        <div class="stat-counter"
-                             x-data="satisfactionCounter"
-                             x-init="initStatsObserver($el, satisfactionCounter)">
-                            <div class="stat-number" x-text="count + suffix"></div>
-                            <div class="stat-label" x-text="__('services.stats.satisfaction.label')"></div>
-                        </div>
+                        <!-- Badge -->
+                        <span class="inline-block text-sm sm:text-base lg:text-lg xl:text-xl font-bold tracking-widest uppercase gradient-text-primary">
+                            <span x-text="__('services.badge')"></span>
+                        </span>
                         
-                        <!-- Cases Stat -->
-                        <div class="stat-counter"
-                             x-data="casesCounter"
-                             x-init="initStatsObserver($el, casesCounter)">
-                            <div class="stat-number" x-text="count + suffix"></div>
-                            <div class="stat-label" x-text="__('services.stats.cases.label')"></div>
+                        <!-- Heading -->
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight gradient-text-secondary"
+                            x-html="__('services.heading').replace(/\\n/g, '<br>')">
+                        </h2>
+
+                        <!-- Description -->
+                        <p class="text-base sm:text-lg lg:text-xl xl:text-2xl text-brand-charcoal/80 leading-relaxed max-w-3xl mx-auto lg:mx-0"
+                           x-text="__('services.description')">
+                        </p>
+
+                        <!-- Animated Statistics -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 pt-4 sm:pt-6 lg:pt-8">
+                            <!-- Satisfaction Stat -->
+                            <div class="stat-counter text-center"
+                                 x-data="satisfactionCounter"
+                                 x-init="initStatsObserver($el, satisfactionCounter)">
+                                <div class="stat-number text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-brand-maroon" x-text="count + suffix"></div>
+                                <div class="stat-label text-xs sm:text-sm lg:text-base text-brand-charcoal/70" x-text="__('services.stats.satisfaction.label')"></div>
+                            </div>
+                            
+                            <!-- Cases Stat -->
+                            <div class="stat-counter text-center"
+                                 x-data="casesCounter"
+                                 x-init="initStatsObserver($el, casesCounter)">
+                                <div class="stat-number text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-brand-maroon" x-text="count + suffix"></div>
+                                <div class="stat-label text-xs sm:text-sm lg:text-base text-brand-charcoal/70" x-text="__('services.stats.cases.label')"></div>
+                            </div>
+                            
+                            <!-- Advice Stat -->
+                            <div class="stat-counter text-center"
+                                 x-data="adviceCounter"
+                                 x-init="initStatsObserver($el, adviceCounter)">
+                                <div class="stat-number text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-brand-maroon" x-text="count + suffix"></div>
+                                <div class="stat-label text-xs sm:text-sm lg:text-base text-brand-charcoal/70" x-text="__('services.stats.advice.label')"></div>
+                            </div>
+                            
+                            <!-- Branches Stat -->
+                            <div class="stat-counter text-center"
+                                 x-data="branchesCounter"
+                                 x-init="initStatsObserver($el, branchesCounter)">
+                                <div class="stat-number text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-brand-maroon" x-text="count + suffix"></div>
+                                <div class="stat-label text-xs sm:text-sm lg:text-base text-brand-charcoal/70" x-text="__('services.stats.branches.label')"></div>
+                            </div>
                         </div>
-                        
-                        <!-- Advice Stat -->
-                        <div class="stat-counter"
-                             x-data="adviceCounter"
-                             x-init="initStatsObserver($el, adviceCounter)">
-                            <div class="stat-number" x-text="count + suffix"></div>
-                            <div class="stat-label" x-text="__('services.stats.advice.label')"></div>
-                        </div>
-                        
-                        <!-- Branches Stat -->
-                        <div class="stat-counter"
-                             x-data="branchesCounter"
-                             x-init="initStatsObserver($el, branchesCounter)">
-                            <div class="stat-number" x-text="count + suffix"></div>
-                            <div class="stat-label" x-text="__('services.stats.branches.label')"></div>
+
+                        <!-- Book Now Button in Services Section -->
+                        <div class="mt-6 sm:mt-8 lg:mt-10 text-center lg:text-left">
+                            <a href="bookings-page.html" 
+                               class="inline-flex items-center justify-center bg-brand-maroon text-brand-white hover:bg-brand-charcoal transition-all duration-300
+                                      px-8 sm:px-12 lg:px-16 xl:px-20 2xl:px-24 py-3 sm:py-4 lg:py-5 xl:py-6
+                                      text-base sm:text-lg lg:text-xl xl:text-2xl font-semibold rounded-lg lg:rounded-xl
+                                      transform hover:scale-105 shadow-lg hover:shadow-xl
+                                      w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl">
+                                <span x-text="__('hero.book_now')"></span>
+                                <i class="fas fa-phone ml-3 sm:ml-4"></i>
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Third Book Now Button -->
-                    <div class="mt-8 text-center">
-                        <a href="bookings-page.html" class="btn-tertiary px-12 py-4 text-lg min-w-64 text-center justify-center">
-                            <span x-text="__('hero.book_now')"></span>
-                            <i class="fas fa-phone ml-2"></i>
-                        </a>
+                    <!-- RIGHT Image - Hidden on mobile -->
+                    <div class="hidden lg:flex lg:col-span-2 justify-center">
+                        <div class="bg-brand-maroon rounded-xl lg:rounded-2xl p-4 lg:p-6 xl:p-8 shadow-2xl">
+                            <img src="assets/images/lady-justice-statue.png"
+                                 alt="Lady Justice Statue"
+                                 class="w-full max-w-xs lg:max-w-sm xl:max-w-md rounded-xl lg:rounded-2xl">
+                        </div>
                     </div>
-                </div>
-
-                <!-- RIGHT (40%) -->
-                <div class="lg:col-span-2 flex justify-center bg-brand-maroon rounded-2xl p-4">
-                    <img src="assets/images/lady-justice-statue.png"
-                         alt="Lady Justice Statue"
-                         class="w-full max-w-xs md:max-w-sm rounded-2xl shadow-2xl">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- About Section -->
-    <section id="about" class="bg-brand-green py-24">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-brand-gold"
+    <section id="about" class="bg-brand-green py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 lg:mb-8 text-brand-gold"
                     x-text="__('about.title')">
                 </h2>
-                <p class="text-xl text-brand-cream/90 mb-8" x-text="__('about.subtitle')"></p>
-                <p class="text-lg text-brand-cream/80 leading-relaxed mb-12" x-text="__('about.description')"></p>
+                <p class="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-brand-cream/90 mb-6 sm:mb-8 lg:mb-10 max-w-4xl mx-auto" x-text="__('about.subtitle')"></p>
+                <p class="text-base sm:text-lg lg:text-xl xl:text-2xl text-brand-cream/80 leading-relaxed mb-8 sm:mb-12 lg:mb-16 max-w-5xl mx-auto" x-text="__('about.description')"></p>
 
                 <!-- Values Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
                     <template x-for="(value, index) in __('about.values')" :key="index">
-                        <div class="bg-brand-cream/20 rounded-xl p-6 hover:shadow-lg transition-shadow border border-brand-gold/30">
-                            <div class="w-16 h-16 mx-auto mb-4 bg-brand-gold/30 rounded-full flex items-center justify-center">
-                                <i class="fas fa-star text-brand-gold text-2xl"></i>
+                        <div class="bg-brand-cream/20 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-8 
+                                    hover:shadow-lg transition-all duration-300 border border-brand-gold/30 
+                                    hover:bg-brand-cream/30 group">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 mx-auto mb-3 sm:mb-4 lg:mb-6 
+                                        bg-brand-gold/30 rounded-full flex items-center justify-center 
+                                        group-hover:bg-brand-gold/50 transition-colors">
+                                <i class="fas fa-star text-brand-gold text-lg sm:text-2xl lg:text-3xl"></i>
                             </div>
-                            <h3 class="text-xl font-semibold mb-3 text-brand-cream" x-text="value.title"></h3>
-                            <p class="text-brand-cream/80" x-text="value.description"></p>
+                            <h3 class="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold mb-2 sm:mb-3 lg:mb-4 text-brand-cream" x-text="value.title"></h3>
+                            <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-brand-cream/80 leading-relaxed" x-text="value.description"></p>
                         </div>
                     </template>
                 </div>
@@ -266,26 +289,30 @@
     </section>
 
     <!-- Portfolio Section -->
-    <section id="portfolio" class="bg-brand-cream/30 py-24">
-        <div class="container mx-auto px-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text-primary"
+    <section id="portfolio" class="bg-brand-cream/30 py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-10 sm:mb-12 lg:mb-16 xl:mb-20">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 lg:mb-8 gradient-text-primary"
                         x-text="__('portfolio.title')">
                     </h2>
-                    <p class="text-xl text-brand-charcoal/80" x-text="__('portfolio.subtitle')"></p>
+                    <p class="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-brand-charcoal/80 max-w-4xl mx-auto" x-text="__('portfolio.subtitle')"></p>
                 </div>
 
                 <!-- Portfolio Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
                     <template x-for="(case_item, index) in __('portfolio.cases')" :key="index">
-                        <div class="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                            <div class="h-48 bg-gradient-to-br from-brand-green/20 to-brand-teal/20 flex items-center justify-center">
-                                <i class="fas fa-gavel text-4xl text-brand-green"></i>
+                        <div class="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg hover:shadow-xl 
+                                    transition-all duration-300 group hover:-translate-y-2">
+                            <div class="h-40 sm:h-48 lg:h-56 bg-gradient-to-br from-brand-green/20 to-brand-teal/20 
+                                        flex items-center justify-center group-hover:from-brand-green/30 group-hover:to-brand-teal/30 
+                                        transition-all duration-300">
+                                <i class="fas fa-gavel text-3xl sm:text-4xl lg:text-5xl text-brand-green 
+                                          group-hover:scale-110 transition-transform duration-300"></i>
                             </div>
-                            <div class="p-6">
-                                <h3 class="text-xl font-semibold mb-3 text-brand-maroon" x-text="case_item.title"></h3>
-                                <p class="text-brand-charcoal/70" x-text="case_item.description"></p>
+                            <div class="p-4 sm:p-6 lg:p-8">
+                                <h3 class="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 lg:mb-4 text-brand-maroon" x-text="case_item.title"></h3>
+                                <p class="text-sm sm:text-base lg:text-lg text-brand-charcoal/70 leading-relaxed" x-text="case_item.description"></p>
                             </div>
                         </div>
                     </template>
@@ -295,28 +322,30 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="bg-white py-24">
-        <div class="container mx-auto px-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text-secondary"
+    <section id="testimonials" class="bg-white py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-10 sm:mb-12 lg:mb-16 xl:mb-20">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 lg:mb-8 gradient-text-secondary"
                         x-text="__('testimonials.title')">
                     </h2>
-                    <p class="text-xl text-brand-charcoal/80" x-text="__('testimonials.subtitle')"></p>
+                    <p class="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-brand-charcoal/80 max-w-4xl mx-auto" x-text="__('testimonials.subtitle')"></p>
                 </div>
 
                 <!-- Testimonials Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
                     <template x-for="(review, index) in __('testimonials.reviews')" :key="index">
-                        <div class="bg-brand-cream/50 rounded-xl p-6 relative">
-                            <div class="absolute top-4 left-4 text-brand-gold text-3xl">
+                        <div class="bg-brand-cream/50 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-8 relative 
+                                    hover:shadow-lg transition-all duration-300 group hover:bg-brand-cream/70">
+                            <div class="absolute top-3 sm:top-4 lg:top-6 left-3 sm:left-4 lg:left-6 text-brand-gold text-2xl sm:text-3xl lg:text-4xl 
+                                        group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-quote-left"></i>
                             </div>
-                            <div class="pt-8">
-                                <p class="text-brand-charcoal/80 mb-6 italic" x-text="review.text"></p>
-                                <div class="border-t border-brand-gold/30 pt-4">
-                                    <h4 class="font-semibold text-brand-maroon" x-text="review.name"></h4>
-                                    <p class="text-sm text-brand-charcoal/70" x-text="review.role"></p>
+                            <div class="pt-6 sm:pt-8 lg:pt-10">
+                                <p class="text-sm sm:text-base lg:text-lg text-brand-charcoal/80 mb-4 sm:mb-6 lg:mb-8 italic leading-relaxed" x-text="review.text"></p>
+                                <div class="border-t border-brand-gold/30 pt-3 sm:pt-4 lg:pt-6">
+                                    <h4 class="font-semibold text-brand-maroon text-sm sm:text-base lg:text-lg" x-text="review.name"></h4>
+                                    <p class="text-xs sm:text-sm lg:text-base text-brand-charcoal/70" x-text="review.role"></p>
                                 </div>
                             </div>
                         </div>
@@ -327,27 +356,30 @@
     </section>
 
     <!-- FAQ Section -->
-    <section id="faq" class="bg-brand-cream/30 py-24">
-        <div class="container mx-auto px-4">
+    <section id="faq" class="bg-brand-cream/30 py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text-primary"
+                <div class="text-center mb-10 sm:mb-12 lg:mb-16 xl:mb-20">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 lg:mb-8 gradient-text-primary"
                         x-text="__('faq.title')">
                     </h2>
-                    <p class="text-xl text-brand-charcoal/80" x-text="__('faq.subtitle')"></p>
+                    <p class="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-brand-charcoal/80" x-text="__('faq.subtitle')"></p>
                 </div>
 
                 <!-- FAQ Items -->
-                <div class="space-y-4">
+                <div class="space-y-3 sm:space-y-4 lg:space-y-6">
                     <template x-for="(item, index) in __('faq.items')" :key="index">
-                        <div class="faq-item">
-                            <button @click="toggleFaq(index)" class="faq-button">
-                                <span class="font-semibold text-brand-maroon" x-text="item.question"></span>
-                                <i class="fas fa-chevron-down transition-transform duration-200"
-                                   :class="{ 'rotate-180': openFaq === index }"></i>
+                        <div class="faq-item bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                            <button @click="toggleFaq(index)" class="faq-button text-left w-full p-4 sm:p-5 lg:p-6 xl:p-8 
+                                                                       hover:bg-brand-cream/30 transition-colors rounded-lg sm:rounded-xl lg:rounded-2xl">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-brand-maroon text-sm sm:text-base lg:text-lg xl:text-xl pr-4" x-text="item.question"></span>
+                                    <i class="fas fa-chevron-down transition-transform duration-200 text-brand-gold flex-shrink-0"
+                                       :class="{ 'rotate-180': openFaq === index }"></i>
+                                </div>
                             </button>
                             <div x-show="openFaq === index" x-transition class="faq-content">
-                                <p class="text-brand-charcoal/80" x-text="item.answer"></p>
+                                <p class="text-brand-charcoal/80 text-sm sm:text-base lg:text-lg xl:text-2xl p-4 sm:p-5 lg:p-6 xl:p-8 pt-0 leading-relaxed" x-text="item.answer"></p>
                             </div>
                         </div>
                     </template>
@@ -357,147 +389,173 @@
     </section>
 
     <!-- CTA Section -->
-    <section id="contact" class="bg-gradient-to-r from-brand-maroon to-brand-charcoal py-24">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto text-center text-white">
-                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-brand-gold" x-text="__('cta.title')"></h2>
-                <p class="text-xl mb-8 opacity-90" x-text="__('cta.subtitle')"></p>
+    <section id="contact" class="bg-gradient-to-r from-brand-maroon to-brand-charcoal py-12 sm:py-16 lg:py-20 xl:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-5xl mx-auto text-center text-white">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 lg:mb-8 text-brand-gold" x-text="__('cta.title')"></h2>
+                <p class="text-lg sm:text-xl lg:text-2xl xl:text-3xl mb-6 sm:mb-8 lg:mb-10 opacity-90 max-w-3xl mx-auto" x-text="__('cta.subtitle')"></p>
                 
-                <div class="flex flex-col md:flex-row gap-6 justify-center items-center mb-8">
-                    <a href="tel:+15551234567" class="flex items-center text-lg hover:text-brand-gold transition-colors">
-                        <i class="fas fa-phone mr-3"></i>
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 justify-center items-center mb-6 sm:mb-8 lg:mb-10">
+                    <a href="tel:+15551234567" class="flex items-center text-base sm:text-lg lg:text-xl xl:text-2xl hover:text-brand-gold transition-colors">
+                        <i class="fas fa-phone mr-2 sm:mr-3 lg:mr-4"></i>
                         <span x-text="__('cta.phone')"></span>
                     </a>
-                    <a href="mailto:info@justyta.com" class="flex items-center text-lg hover:text-brand-gold transition-colors">
-                        <i class="fas fa-envelope mr-3"></i>
+                    <a href="mailto:info@justyta.com" class="flex items-center text-base sm:text-lg lg:text-xl xl:text-2xl hover:text-brand-gold transition-colors">
+                        <i class="fas fa-envelope mr-2 sm:mr-3 lg:mr-4"></i>
                         <span x-text="__('cta.email')"></span>
                     </a>
                 </div>
 
-                <button class="inline-flex items-center px-8 py-4 bg-brand-gold text-brand-maroon font-semibold rounded-lg 
-                              hover:bg-brand-lime transition-all duration-300 transform hover:scale-105 shadow-lg"
-                        onclick="window.location.href='bookings-page.html'">
+                <!-- Main CTA Button -->
+                <a href="bookings-page.html" 
+                   class="inline-flex items-center justify-center px-8 sm:px-12 lg:px-16 xl:px-20 2xl:px-24 py-4 sm:py-5 lg:py-6 xl:py-7
+                          bg-brand-gold text-brand-maroon font-bold rounded-lg lg:rounded-xl xl:rounded-2xl
+                          hover:bg-brand-lime transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl 
+                          text-base sm:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl
+                          w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl">
                     <span x-text="__('cta.button')"></span>
-                    <i class="fas fa-calendar-check ml-2"></i>
-                </button>
+                    <i class="fas fa-calendar-check ml-3 sm:ml-4 lg:ml-5"></i>
+                </a>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-">
-                <!-- Company Info -->
-                <div class="md:col-span-2">
-                    <div class="flex items-center space-x-3 mb-4">
-                        <img src="assets/images/JUSTYTA Logo transparent.png" alt="JUSTYTA" class="h-10 w-auto">
-                        <span class="text-2xl font-bold font-decorative">JUSTYTA</span>
+    <footer class="footer bg-brand-maroon text-brand-white py-8 sm:py-12 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Footer Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
+                    
+                    <!-- Company Info -->
+                    <div class="sm:col-span-2 lg:col-span-1 text-center sm:text-left">
+                        <!-- Logo and Company Name -->
+                        <div class="flex items-center justify-center sm:justify-start space-x-2 sm:space-x-3 mb-4 sm:mb-3 lg:mb-4">
+                            <img src="assets/images/JUSTYTA Logo transparent.png" alt="JUSTYTA" class="h-8 sm:h-10 lg:h-12 w-auto">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-bold font-decorative">JUSTYTA</span>
+                        </div>
+                        
+                        <!-- Company Description -->
+                        <p class="text-brand-white/80 mb-4 sm:mb-3 lg:mb-4 text-sm sm:text-base lg:text-lg leading-relaxed" 
+                           x-text="__('footer.description')"></p>
+                        
+                        <!-- Social Media Links -->
+                        <div class="flex justify-center sm:justify-start space-x-3 sm:space-x-4">
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-facebook text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-twitter text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-linkedin text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors p-2 rounded-full hover:bg-brand-white/10">
+                                <i class="fab fa-instagram text-lg sm:text-xl lg:text-2xl"></i>
+                            </a>
+                        </div>
                     </div>
-                    <p class="text-brand-white/80 mb-4" x-text="__('footer.description')"></p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
-                            <i class="fab fa-facebook text-xl"></i>
-                        </a>
-                        <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
-                            <i class="fab fa-twitter text-xl"></i>
-                        </a>
-                        <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
-                            <i class="fab fa-linkedin text-xl"></i>
-                        </a>
-                        <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors">
-                            <i class="fab fa-instagram text-xl"></i>
-                        </a>
+                    
+                    <!-- Services Column -->
+                    <div class="text-center sm:text-left">
+                        <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-4 sm:mb-3 lg:mb-4 text-brand-white 
+                                   border-b border-brand-gold/30 pb-2 sm:border-b-0 sm:pb-0" 
+                            x-text="__('footer.services_title')"></h4>
+                        <ul class="space-y-2 sm:space-y-1 lg:space-y-2">
+                            <template x-for="service in __('footer.services')" :key="service">
+                                <li>
+                                    <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                      text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1" 
+                                       x-text="service"></a>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
-                </div>
-                
-                <!-- Services -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4 text-brand-white" x-text="__('footer.services_title')"></h4>
-                    <ul class="space-y-2">
-                        <template x-for="service in __('footer.services')" :key="service">
+                    
+                    <!-- Contact Column -->
+                    <div class="text-center sm:text-left">
+                        <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-4 sm:mb-3 lg:mb-4 text-brand-white 
+                                   border-b border-brand-gold/30 pb-2 sm:border-b-0 sm:pb-0" 
+                            x-text="__('footer.contact_title')"></h4>
+                        <div class="space-y-2 sm:space-y-1 lg:space-y-3 text-brand-white/80 text-sm sm:text-base lg:text-lg">
+                            <!-- Address -->
+                            <div class="flex items-start justify-center sm:justify-start">
+                                <i class="fas fa-map-marker-alt text-brand-gold mr-2 sm:mr-3 mt-1 flex-shrink-0"></i>
+                                <p x-text="__('footer.contact.address')" class="leading-relaxed"></p>
+                            </div>
+                            
+                            <!-- Phone -->
+                            <div class="flex items-center justify-center sm:justify-start">
+                                <i class="fas fa-phone text-brand-gold mr-2 sm:mr-3 flex-shrink-0"></i>
+                                <a href="tel:+15551234567" class="hover:text-brand-gold transition-colors" 
+                                   x-text="__('footer.contact.phone')"></a>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="flex items-center justify-center sm:justify-start">
+                                <i class="fas fa-envelope text-brand-gold mr-2 sm:mr-3 flex-shrink-0"></i>
+                                <a href="mailto:info@justyta.com" class="hover:text-brand-gold transition-colors" 
+                                   x-text="__('footer.contact.email')"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links Column -->
+                    <div class="hidden lg:block text-center sm:text-left">
+                        <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-4 sm:mb-3 lg:mb-4 text-brand-white">Quick Links</h4>
+                        <ul class="space-y-2 sm:space-y-1 lg:space-y-2">
                             <li>
-                                <a href="#" class="text-brand-white/80 hover:text-brand-gold transition-colors" x-text="service"></a>
+                                <a href="#hero" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                      text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">Home</a>
                             </li>
-                        </template>
-                    </ul>
-                </div>
-                
-                <!-- Contact -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4 text-brand-white" x-text="__('footer.contact_title')"></h4>
-                    <div class="space-y-2 text-brand-white/80">
-                        <p x-text="__('footer.contact.address')"></p>
-                        <p x-text="__('footer.contact.phone')"></p>
-                        <p x-text="__('footer.contact.email')"></p>
+                            <li>
+                                <a href="#about" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                      text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">About</a>
+                            </li>
+                            <li>
+                                <a href="#services" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                      text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">Services</a>
+                            </li>
+                            <li>
+                                <a href="bookings-page.html" class="text-brand-white/80 hover:text-brand-gold transition-all duration-300 
+                                                      text-sm sm:text-base lg:text-lg block py-1 hover:translate-x-1">Book Now</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </div>
-            
-            <div class="border-t border-brand-white/20 mt-8 pt-8 text-center">
-                <p class="text-brand-white/60" x-text="__('footer.copyright')"></p>
+                
+                <!-- Footer Bottom -->
+                <div class="border-t border-brand-white/20 mt-8 sm:mt-6 pt-6 sm:pt-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                        <!-- Copyright -->
+                        <p class="text-brand-white/60 text-xs sm:text-sm text-center sm:text-left" 
+                           x-text="__('footer.copyright')"></p>
+                        
+                        <!-- Mobile Book Now Button in Footer -->
+                        <div class="sm:hidden w-full">
+                            <a href="bookings-page.html" 
+                               class="block w-full text-center bg-brand-gold text-brand-maroon font-semibold 
+                                      py-4 px-8 rounded-lg hover:bg-brand-lime transition-colors text-lg">
+                                <i class="fas fa-calendar-check mr-3"></i>
+                                Book Consultation Now
+                            </a>
+                        </div>
+                        
+                        <!-- Desktop Additional Links -->
+                        <div class="hidden sm:flex space-x-4 text-xs">
+                            <a href="#" class="text-brand-white/60 hover:text-brand-gold transition-colors">Privacy Policy</a>
+                            <span class="text-brand-white/40">|</span>
+                            <a href="#" class="text-brand-white/60 hover:text-brand-gold transition-colors">Terms of Service</a>
+                            <span class="text-brand-white/40">|</span>
+                            <a href="#" class="text-brand-white/60 hover:text-brand-gold transition-colors">Legal Notice</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
 
     <!-- Load Main App Script -->
     <script src="js/app.js"></script>
-
-    <!-- Express.js and CORS Configuration (for reference, not to be included in the final HTML) -->
-    <script>
-        const express = require('express');
-        const cors = require('cors');
-        const app = express();
-
-        // Install cors if you haven't already
-        // npm install cors
-
-        // CORS Configuration for your JUSTYTA booking system
-        const corsOptions = {
-            origin: [
-                'http://localhost:3000',
-                'http://127.0.0.1:3000',
-                'http://localhost:8000',
-                'http://localhost:5000',
-                'https://justyta.com',           // Your production domain
-                'https://www.justyta.com',       // www version
-                'https://justyta.netlify.app',   // If using Netlify
-                'https://justyta.vercel.app'     // If using Vercel
-            ],
-            credentials: true,
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-            allowedHeaders: [
-                'Content-Type', 
-                'Authorization', 
-                'Accept', 
-                'X-Requested-With',
-                'Cache-Control',
-                'Pragma'
-            ],
-            exposedHeaders: ['X-Total-Count', 'X-Request-ID']
-        };
-
-        // Apply CORS middleware BEFORE your routes
-        app.use(cors(corsOptions));
-
-        // Handle preflight requests explicitly
-        app.options('*', cors(corsOptions));
-
-        // Your existing routes
-        app.get('/api/v1/slots', (req, res) => {
-            // Your slots endpoint
-        });
-
-        app.post('/api/v1/book', (req, res) => {
-            // Your booking endpoint
-        });
-
-        // Start server
-        const PORT = process.env.PORT || 3000;
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-            console.log('CORS enabled for:', corsOptions.origin);
-        });
-    </script>
 </body>
 </html>
